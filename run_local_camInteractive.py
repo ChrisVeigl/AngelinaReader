@@ -20,7 +20,6 @@
 #
 
 
-import pyttsx3
 import cv2
 import os
 import glob
@@ -31,66 +30,44 @@ from pygame import mixer
 import local_config
 import model.infer_retinanet as infer_retinanet
 
+
 model_weights = 'model.t7'
 MIN_AREA=100000
-tmpwavfile = "temp.wav"
+WINDOW_WIDTH=500
 lastKey=-1
 img_counter = 1
-speakText=True
 fromCam=True
 fn=0
 
-
-parser = argparse.ArgumentParser(description='Angelina Braille Reader: optical Braille text recognizer - interactive version using camera input.')
-
-#parser.add_argument('input', type=str, help='File(s) to be processed: image, pdf or zip file or directory name')
-parser.add_argument('results_dir', type=str, help='Output directory for results.')
-parser.add_argument('-l', '--lang', type=str, default='DE', help='(Optional) Document language (RU, EN, DE, GR, LV, PL, UZ or UZL). If not specified, default is DE')
-parser.add_argument('-o', '--orient', action='store_false', help="Don't find orientation, use original file orientation (faster)")
-#parser.add_argument('-2', dest='two', action='store_true', help="Process 2 sides")
-
-args = parser.parse_args()
-
-args.results_dir=os.path.join(args.results_dir, '')  # add trailing slash if necessary
-if not Path(args.results_dir).exists():
-    print('output directory does not exist: ' + args.results_dir)
-    exit()
-
-
-# Initialize the speech synthesizer and pygame mixer
-speechSynthesizer = pyttsx3.init()
-voices = speechSynthesizer.getProperty("voices")[0] 
-speechSynthesizer.setProperty('voice', voices)
-speechSynthesizer.setProperty('rate', 200)
-speechSynthesizer.setProperty('volume', 0.7)
-mixer.init()
 
 
 def announce (text):
     global fn
     global lastKey
-    global speakText
 
     print(text, flush=True)
-        
-    # speechSynthesizer.say(text)
-    # using workaround with pygame mixer because ttsx3 can't be interrupted!
-    fn = (fn+1) % 2  # another workaround because ttsx3 does not close the last file!
-    fil="{}{}".format(tmpwavfile,fn)
-    speechSynthesizer.save_to_file(text, fil)
-    speechSynthesizer.runAndWait()
-    speechSynthesizer.stop()
-    mixer.music.load(fil)
+    
+    if onWindows == True:
+        speechSynthesizer.say(text)
+        # using workaround with pygame mixer because ttsx3 can't be interrupted!
+        fn = (fn+1) % 2  # another workaround because ttsx3 does not close the last file!
+        tempFile="temp{}.wav".format(fn)
+        speechSynthesizer.save_to_file(text, tempFile)
+        speechSynthesizer.runAndWait()
+        speechSynthesizer.stop()
+    else:
+        tts = gTTS(text, lang='de')
+        tts.save("temp.mp3")
+        os.system("sox " + "temp.mp3 temp.wav tempo 1.7")
+        tempFile="temp.wav"
+
+    mixer.music.load(tempFile)        
     mixer.music.play()
     
     pause=False
     lastKey=-1
     while (mixer.music.get_busy() and lastKey==-1) or (pause == True):
         lastKey = cv2.waitKeyEx(10)
-        if lastKey == ord('s'):   # s: interrupt and disable speech output
-            speakText=False
-            announce("Sprachausgabe von Ergebnissen ausgeschaltet")
-            break
         if lastKey == ord('p'):   # p: pause/resume ongoing speech output
             if pause==False:
                 mixer.music.pause()                
@@ -101,15 +78,17 @@ def announce (text):
 
 def readResult():
     global img_counter
-    global speakText
+
+    announce("Vorlesen der Ergebnisse für Seite {}".format(img_counter))
 
     marked_name = "{}page_{}.marked.txt".format(args.results_dir,img_counter)
     marked_jpg = "{}page_{}.marked.jpg".format(args.results_dir,img_counter)    
 
-    cv2.namedWindow("OBR-Result")
-    cv2.moveWindow("OBR-Result", 500,40)
+    windowName="OBR-Ergebnis Seite {}".format(img_counter)
+    cv2.namedWindow(windowName)
+    cv2.moveWindow(windowName, 50+WINDOW_WIDTH,40)
     img = cv2.imread(marked_jpg)
-    cv2.imshow("OBR-Result", img)
+    cv2.imshow(windowName, resizeImg(img))
     
     file1 = open(marked_name, 'r', encoding='utf-8', errors='ignore')
     Lines = file1.readlines()
@@ -126,29 +105,29 @@ def readResult():
         line=line.replace("-", " (Minus) ")
         line=line.replace("+", " (Plus) ")
         line=line.replace("*", " (Stern) ")
-        
-        if speakText==True:
-            announce("Zeile{}: {}".format(actLine+1, line.strip()))
-            if (lastKey == 2490368 and actLine > 0):   # up arrow
-                actLine-=1
-            elif (lastKey == 2621440 and actLine < len(Lines)):   # down arrow
-                actLine+=1
-            elif (lastKey == -1):   # no key -> progress to next line!
-                actLine+=1
-            elif (lastKey == 27):   # ESC: end readout
-                actLine = len(Lines)
+       
+        announce("Zeile{}: {}".format(actLine+1, line.strip()))
+        if (lastKey == UP_ARROW and actLine > 0):   # up arrow
+            actLine-=1
+        elif (lastKey == DOWN_ARROW and actLine < len(Lines)):   # down arrow
+            actLine+=1
+        elif (lastKey == -1):   # no key -> progress to next line!
+            actLine+=1
+        elif (lastKey == 27):   # ESC: end readout
+            actLine = len(Lines)
+            announce ("Vorlesemodus beendet")
         else:
             actLine+=1
             
-    cv2.destroyWindow("OBR-Result")
+    cv2.destroyWindow(windowName)
     
 def process_image (img,x,y,w,h):
     global img_counter
     global frameCopy
-    global speakText
+
     ROI = img[y:y+h, x:x+w]
     cv2.rectangle(frameCopy,(x,y),(x+w,y+h),(10,10,255),2)
-    cv2.imshow("brailleImage", frameCopy)
+    cv2.imshow("brailleImage", resizeImg(frameCopy))
 
     img_name = "{}page_{}".format(args.results_dir,img_counter)
     if (os.path.exists(img_name+".marked.brl")==True):
@@ -175,13 +154,95 @@ def process_image (img,x,y,w,h):
                                            process_2_sides=False,
                                            repeat_on_aligned=False,
                                            save_development_info=False)    
-    readResult()
-    announce("Verarbeitung Seite {} - abgeschlossen".format(img_counter));
+    announce("Verarbeitung Seite {} - abgeschlossen".format(img_counter))
     img_counter += 1
 
+def getYesNo():
+    while (True):
+        k=cv2.waitKey(10)
+        if k==ord('j'):
+            return True
+        if k==ord('n'):
+            return False
+        if k==-1 or k==0 or k==255:
+            continue
+        else:
+            announce("bitte j für ja oder n für nein drücken")
+
+def resizeImg(image):
+    (h, w) = image.shape[:2]
+    r = WINDOW_WIDTH / float(w)
+    dim = (WINDOW_WIDTH, int(h * r))
+    return cv2.resize(image, dim, cv2.INTER_AREA)
+
+def openCamera():
+    global cam
+    # checks the first 10 cams!
+    i = 0
+    while i < 10:
+        print("checking Camera {}".format(i))
+        cam = cv2.VideoCapture(i)
+        ret, frame = cam.read()
+        if ret:        
+        # if cam.read()[0]:
+            cv2.imshow("brailleImage", resizeImg(frame))
+            announce ("Kamera Index {} gefunden, Name:{}".format(i,cam.getBackendName()))
+            announce ("diese Kamera verwenden?");
+            if getYesNo()==True:
+                announce ("ja")
+                break
+            else:
+                announce ("nein")
+                cam.release()
+        i+=1
+
+
+
+# starts here!
+
+parser = argparse.ArgumentParser(description='Angelina Braille Reader: optical Braille text recognizer - interactive version using camera input.')
+
+#parser.add_argument('input', type=str, help='File(s) to be processed: image, pdf or zip file or directory name')
+parser.add_argument('results_dir', type=str, help='Output directory for results.')
+parser.add_argument('-l', '--lang', type=str, default='DE', help='(Optional) Document language (RU, EN, DE, GR, LV, PL, UZ or UZL). If not specified, default is DE')
+parser.add_argument('-o', '--orient', action='store_false', help="Don't find orientation, use original file orientation (faster)")
+#parser.add_argument('-2', dest='two', action='store_true', help="Process 2 sides")
+
+args = parser.parse_args()
+
+args.results_dir=os.path.join(args.results_dir, '')  # add trailing slash if necessary
+if not Path(args.results_dir).exists():
+    print('output directory does not exist: ' + args.results_dir)
+    exit()
+
+# Initialize the speech synthesizer and pygame mixer; OS-dependent...
+if os.name=='nt':
+    onWindows=True
+    import pyttsx3
+    speechSynthesizer = pyttsx3.init()
+    voices = speechSynthesizer.getProperty("voices")[0] 
+    speechSynthesizer.setProperty('voice', voices)
+    speechSynthesizer.setProperty('rate', 200)
+    speechSynthesizer.setProperty('volume', 0.7)
+    UP_ARROW = 2490368
+    DOWN_ARROW = 2621440   
+else:
+    onWindows=False
+    from gtts import gTTS
+    UP_ARROW = 65362
+    DOWN_ARROW = 65364
+
+
+mixer.init()
 
 # welcome message, create live window
 announce("Programm startet ...")
+
+# Initialize the webcam and opencv
+cv2.namedWindow("brailleImage")
+cv2.moveWindow("brailleImage", 10,50)
+openCamera()
+
 
 # Initialize the Braille recognizer
 recognizer = infer_retinanet.BrailleInference(
@@ -189,28 +250,31 @@ recognizer = infer_retinanet.BrailleInference(
     model_weights_fn=os.path.join(local_config.data_path, 'weights', model_weights),
     create_script=None)
 
-# Initialize the webcam and opencv
-cam = cv2.VideoCapture(0)
-cv2.namedWindow("brailleImage")
-cv2.moveWindow("brailleImage", 10,50)
 announce ("Bereit. Taste h für Hilfe drücken.");
+
+updateImage = True
 
 # main loop
 while True:
     actfile="{}page_{}.png".format(args.results_dir,img_counter)
-    if (fromCam==True):        
-        ret, frame = cam.read()
-        if not ret:
-            announce("Kamera konnte kein Bild aufnehmen.")
-            break
-    elif (os.path.exists(actfile)==True):
-        frame = cv2.imread(actfile)
-    else:
-        announce("Datei nicht vorhanden. Kamera eingeschaltet - verwende Kamerabild")
-        fromCam=True
-        continue
 
-    cv2.imshow("brailleImage", frame)
+    if updateImage == True:
+        if (fromCam==True):        
+            ret, frame = cam.read()
+            if not ret:
+                announce("Kamera konnte kein Bild aufnehmen.")
+                fromCam=False
+                updateImage=False
+        elif (os.path.exists(actfile)==True):
+            frame = cv2.imread(actfile)
+            updateImage=False
+        else:
+            announce("Datei für Seite {} nicht vorhanden".format(img_counter))
+            updateImage=False
+            continue
+
+    if frame is not None:
+        cv2.imshow("brailleImage", resizeImg(frame))
 
     k = cv2.waitKeyEx(1)
     if k%256 == 27:       # ESC pressed
@@ -230,43 +294,47 @@ while True:
             announce("Kamera eingeschaltet - verwende Kamerabild")
         else:
             announce("Kamera ausgeschaltet - verwende bestehende Ergebnisdateien")
+        updateImage=True
 
-    elif k%256 == ord('s'):    # s pressed
-        speakText = not speakText
-        if speakText==True:
-            announce("Sprachausgabe von Ergebnissen eingeschaltet")
-        else:
-            announce("Sprachausgabe von Ergebnissen ausgeschaltet")
+    elif k%256 == ord('v'):    # v pressed
+        readResult()            
 
     elif k%256 == ord('h'):    # h pressed
         announce("Taste h: Ausgabe Hilfetext")
-        announce("Taste k: zwischen Kamera und Ergebnisdateien wechseln")
+        announce("Taste k: zwischen Kamera und Bilddateien wechseln")
         announce("Leertaste: Bildverarbeitung starten")
-        announce("Taste l: löschen der bestehenden Ergebnisdateien")
-        announce("Taste s: Sprachausgabe von Ergebnissen ein- oder ausschalten")
-        announce("Taste p: Sprachausgabe pausieren")
+        announce("Taste v: Vorlesen der aktuellen Seite")
         announce("Pfeiltaste rauf: vorige Ergebniszeile lesen")
         announce("Pfeiltaste runter: nächste Ergebniszeile lesen")
+        announce("Taste p: Pausieren einer laufenden Sprachausgabe")
         announce("Plustaste: nächste Seite aktivieren")
         announce("Minustaste: vorige Seite aktivieren")
-        announce("Escapetaste: Programm beenden")
+        announce("Taste l: löschen der bestehenden Bild- und Ergebnisdateien")
+        announce("Escape: Programm beenden")
 
     elif k%256 == ord('-'):    # - pressed
+        updateImage=True
         if (img_counter>1):
             img_counter-=1
         announce("Seite {}".format(img_counter))
 
     elif k%256 == ord('+'):    # + pressed
+        updateImage=True
         img_counter+=1
         announce("Seite {}".format(img_counter))
             
     elif k%256 == ord(' '):     # SPACE pressed
+        updateImage=True
+        if frame is None:
+            announce ("Bildaten für Seite {} nicht vorhanden, Verarbeitung nicht möglich".format(image_counter))
+            continue
+        announce ("Starte Verarbeitung von Seite {}".format(image_counter))
         frameCopy = frame.copy()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         thresh = cv2.threshold(gray,0,255,cv2.THRESH_OTSU + cv2.THRESH_BINARY)[1]
         #cv2.imshow('thresh', thresh)
 
-        # find contours of biggerst bounding rectangle
+        # find contours of biggest bounding rectangle
         cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if len(cnts) == 2 else cnts[1]
         maxArea=0
@@ -293,8 +361,8 @@ while True:
                 process_image(frame,x,y,half_w,h)
                 process_image(frame,x+half_w,y,half_w,h)
         else:
-            announce("keine Seite erkannt");
-    
+            announce("keine Seite erkannt");    
+
     elif k==-1:  # normally -1 returned,so don't print it
         continue
     else:
