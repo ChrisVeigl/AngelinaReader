@@ -373,7 +373,7 @@ while True:
     elif k%256 == ord(' '):     # SPACE pressed
         updateImage=True
         if frame is None:
-            announce ("Bildaten für Seite {} nicht vorhanden, Verarbeitung nicht möglich".format(image_counter))
+            announce ("Bildaten für Seite {} nicht vorhanden, Verarbeitung nicht möglich".format(img_counter))
             continue
         announce ("Starte Verarbeitung von Seite {}".format(image_counter))
         frameCopy = frame.copy()
