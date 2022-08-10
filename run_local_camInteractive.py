@@ -34,11 +34,19 @@ import model.infer_retinanet as infer_retinanet
 model_weights = 'model.t7'
 MIN_AREA=100000
 WINDOW_WIDTH=500
+
 lastKey=-1
 img_counter = 1
 fromCam=True
+readLinenumbers=True
 fn=0
+voiceSpeed=150
 
+currentLang = "de"
+langMapping = {
+	"de": "de-DE",
+	"en": "en-US"
+}
 
 
 def announce (text):
@@ -49,25 +57,35 @@ def announce (text):
     
     if onWindows == True:
         speechSynthesizer.say(text)
-        # using workaround with pygame mixer because ttsx3 can't be interrupted!
-        fn = (fn+1) % 2  # another workaround because ttsx3 does not close the last file!
+        fn = (fn+1) % 2  # a workaround because ttsx3 does not close the most recent file correctly
         tempFile="temp{}.wav".format(fn)
         speechSynthesizer.save_to_file(text, tempFile)
         speechSynthesizer.runAndWait()
         speechSynthesizer.stop()
     else:
-        tts = gTTS(text, lang='de')
-        tts.save("temp.mp3")
-        os.system("sox " + "temp.mp3 temp.wav tempo 1.7")
+        # use google TTS
+        #tts = gTTS(text, lang='de')
+        #tts.save("temp.mp3")
+        
+        # use PicoTTS
+        os.system('pico2wave --lang={} -w pico.wav "{}"'.format(langMapping.get(currentLang),text))
+        os.system("sox " + "pico.wav temp.wav tempo {}".format(voiceSpeed/100))
         tempFile="temp.wav"
 
-    mixer.music.load(tempFile)        
-    mixer.music.play()
+    # using pygame mixer to interrupt/pause voice playback!
+    
+    try:
+        mixer.music.load(tempFile)        
+        mixer.music.play()
+    except:
+        print ("Could not play music file (maybe empty)!")
     
     pause=False
     lastKey=-1
     while (mixer.music.get_busy() and lastKey==-1) or (pause == True):
         lastKey = cv2.waitKeyEx(10)
+        if lastKey == 27:         # ESC: end readout
+                mixer.music.stop()
         if lastKey == ord('p'):   # p: pause/resume ongoing speech output
             if pause==False:
                 mixer.music.pause()                
@@ -105,11 +123,15 @@ def readResult():
         line=line.replace("-", " (Minus) ")
         line=line.replace("+", " (Plus) ")
         line=line.replace("*", " (Stern) ")
-       
-        announce("Zeile{}: {}".format(actLine+1, line.strip()))
-        if (lastKey == UP_ARROW and actLine > 0):   # up arrow
+
+        if (readLinenumbers==True):
+            announce("Zeile{}: {}".format(actLine+1, line.strip()))
+        else:
+            announce(line.strip())
+            
+        if (lastKey == LEFT_ARROW and actLine > 0):   # up arrow
             actLine-=1
-        elif (lastKey == DOWN_ARROW and actLine < len(Lines)):   # down arrow
+        elif (lastKey == RIGHT_ARROW and actLine < len(Lines)):   # down arrow
             actLine+=1
         elif (lastKey == -1):   # no key -> progress to next line!
             actLine+=1
@@ -226,11 +248,15 @@ if os.name=='nt':
     speechSynthesizer.setProperty('volume', 0.7)
     UP_ARROW = 2490368
     DOWN_ARROW = 2621440   
+    LEFT_ARROW = 2424832
+    RIGHT_ARROW = 2555904
 else:
     onWindows=False
-    from gtts import gTTS
+    #from gtts import gTTS
     UP_ARROW = 65362
     DOWN_ARROW = 65364
+    LEFT_ARROW = 65361
+    RIGHT_ARROW = 65363
 
 
 mixer.init()
@@ -262,8 +288,8 @@ while True:
         if (fromCam==True):        
             ret, frame = cam.read()
             if not ret:
-                announce("Kamera konnte kein Bild aufnehmen.")
-                fromCam=False
+                announce("Kamera konnte Seite {} nicht aufnehmen.".format(img_counter))
+                # fromCam=False
                 updateImage=False
         elif (os.path.exists(actfile)==True):
             frame = cv2.imread(actfile)
@@ -278,8 +304,15 @@ while True:
 
     k = cv2.waitKeyEx(1)
     if k%256 == 27:       # ESC pressed
-        announce("Escape gedrueckt, Programm wird beendet")
+        announce("Escape gedrückt, Programm wird beendet")
         break
+
+    if k%256 == ord('z'):   # z pressed
+        readLinenumbers = not readLinenumbers
+        if (readLinenumbers==True):
+            announce("Zeilennummern werden vorgelesen")
+        else:
+            announce("Zeilennummern werden nicht vorgelesen")
 
     elif k%256 == ord('l'):    # l pressed
         announce("Lösche alle bestehenden Ergebnisdateien.")
@@ -304,25 +337,39 @@ while True:
         announce("Taste k: zwischen Kamera und Bilddateien wechseln")
         announce("Leertaste: Bildverarbeitung starten")
         announce("Taste v: Vorlesen der aktuellen Seite")
-        announce("Pfeiltaste rauf: vorige Ergebniszeile lesen")
-        announce("Pfeiltaste runter: nächste Ergebniszeile lesen")
-        announce("Taste p: Pausieren einer laufenden Sprachausgabe")
-        announce("Plustaste: nächste Seite aktivieren")
-        announce("Minustaste: vorige Seite aktivieren")
+        announce("Pfeiltaste rechts: nächste Seite")
+        announce("Pfeiltaste links: vorige Seite")
+        announce("Pfeiltaste rauf: vorige Zeile lesen")
+        announce("Pfeiltaste runter: nächste Zeile lesen")
+        announce("Taste z: Zeilennummern vorlesen oder nicht")
+        announce("Taste p: Pausieren der laufenden Sprachausgabe")
+        announce("Plustaste: schneller sprechen")
+        announce("Minustaste: langsamer sprechen")
         announce("Taste l: löschen der bestehenden Bild- und Ergebnisdateien")
         announce("Escape: Programm beenden")
 
     elif k%256 == ord('-'):    # - pressed
+        voiceSpeed -= 10
+        announce("Sprechgeschwindigkeit {} Prozent".format(voiceSpeed))
+
+    elif k%256 == ord('+'):    # + pressed
+        voiceSpeed += 10
+        announce("Sprechgeschwindigkeit {} Prozent".format(voiceSpeed))
+            
+    elif k == UP_ARROW:        # up arrow pressed
         updateImage=True
         if (img_counter>1):
             img_counter-=1
         announce("Seite {}".format(img_counter))
 
-    elif k%256 == ord('+'):    # + pressed
+    elif k == DOWN_ARROW:      # down arrow pressed
         updateImage=True
         img_counter+=1
         announce("Seite {}".format(img_counter))
-            
+
+    elif k == LEFT_ARROW or k == RIGHT_ARROW:     # left or right arrow pressed
+        announce("Zum Vorlesen der aktuellen Seite Taste v drücken")
+
     elif k%256 == ord(' '):     # SPACE pressed
         updateImage=True
         if frame is None:
@@ -366,7 +413,7 @@ while True:
     elif k==-1:  # normally -1 returned,so don't print it
         continue
     else:
-        print ("Tastencode {} nicht verwendet".format(k)) # else print its value
+        print ("Tastencode {} nicht verwendet".format(k)) # else print key value
         
 cam.release()
 cv2.destroyAllWindows()
