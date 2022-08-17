@@ -108,9 +108,24 @@ def announce (text):
                 lastKey=-1
             pause = not pause
 
+def expandUnreadableCharacters(line,expandSpaceKey):
+    line=line.replace("~?~", " (unbekannt) ")
+    line=line.replace("\"", " (Hochkomma) ")
+    line=line.replace(":", " (Doppelpunkt) ")
+    line=line.replace(";", " (Strichpunkt) ")
+    line=line.replace(",", " (Beistrich) ")
+    line=line.replace(".", " (Punkt) ")
+    line=line.replace("-", " (Minus) ")
+    line=line.replace("+", " (Plus) ")
+    line=line.replace("*", " (Stern) ")
+    if (expandSpaceKey==True):
+        line=line.replace(" ", "(Leertaste) ")
+    return(line)
+
 def readResult():
     global img_counter
     global readLinenumbers
+    global lastKey
 
     announce("Vorlesen der Ergebnisse für Seite {}".format(img_counter))
 
@@ -131,28 +146,53 @@ def readResult():
     Lines = file1.readlines()
       
     actLine = 0
-    while (actLine < len (Lines)):
-        line=Lines[actLine]
-        line=line.replace("~?~", " (unbekannt) ")
-        line=line.replace("\"", " (Hochkomma) ")
-        line=line.replace(":", " (Doppelpunkt) ")
-        line=line.replace(";", " (Strichpunkt) ")
-        line=line.replace(",", " (Beistrich) ")
-        line=line.replace(".", " (Punkt) ")
-        line=line.replace("-", " (Minus) ")
-        line=line.replace("+", " (Plus) ")
-        line=line.replace("*", " (Stern) ")
-
-        if (readLinenumbers==True):
-            announce("Zeile{}: {}".format(actLine+1, line.strip()))
+    actLetter = -1
+    readNextLetter = False
+    readNextLine = True
+    while True:
+        if readNextLine == True:
+            line=Lines[actLine].strip()
+            line=expandUnreadableCharacters(line, False)
+            if (readLinenumbers==True):
+                announce("Zeile{}: {}".format(actLine+1, line.strip()))
+            else:
+                announce(line.strip())
+        elif readNextLetter == True:
+            line=Lines[actLine].strip()
+            letter=line[actLetter]
+            announce(expandUnreadableCharacters(letter,True))
+            readNextLetter=False
         else:
-            announce(line.strip())
+            if readNextLine == False:
+                lastKey = cv2.waitKeyEx(10)
             
         if (lastKey == UP_ARROW and actLine > 0):   # up arrow
             actLine-=1
+            actLetter=-1
+            readNextLetter=False
+            readNextLine=True
         elif (lastKey == DOWN_ARROW and actLine < len(Lines)):   # down arrow
             actLine+=1
-        elif (lastKey == -1):   # no key -> progress to next line!
+            actLetter=-1
+            readNextLetter=False
+            readNextLine=True
+        elif (lastKey == LEFT_ARROW):
+            readNextLine=False
+            if (actLetter>0):
+                readNextLetter=True
+                actLetter-=1
+            else:
+                announce("Zeilenanfang")
+                actLetter=-1
+        elif (lastKey == RIGHT_ARROW):
+            readNextLine=False
+            if (actLetter<len(line)-1):
+                readNextLetter=True
+                actLetter+=1
+            else:
+                announce("Zeilenende")
+                actLetter=len(line)
+        elif (lastKey == -1) and (readNextLine == True):   # no key -> progress to next line!
             actLine+=1
         elif (lastKey == 27):   # ESC: end readout
             actLine = len(Lines)
@@ -163,8 +203,9 @@ def readResult():
                 announce("Zeilennummern werden vorgelesen")
             else:
                 announce("Zeilennummern werden nicht vorgelesen")
-        else:
-            actLine+=1
+            
+        if actLine == len (Lines):
+            break
             
     cv2.destroyWindow(windowName)
     
@@ -306,16 +347,18 @@ def printHelp():
     announce("Taste h: Ausgabe Hilfetext")
     announce("Taste k: zwischen Kamera und Bilddateien wechseln")
     announce("Leertaste: Bildverarbeitung der aktuellen Seite starten")
-    announce("Taste v: Vorlesen der Ergebnisse aktuelle Seite")
+    announce("Taste l: löschen der bestehenden Bild- und Ergebnisdateien")
+    announce("Taste v: Vorlesemodus")
+    announce("Bildtaste rauf: nächste Seite")
+    announce("Bildtaste runter: vorige Seite")
     announce("Pfeiltaste rauf: vorige Zeile lesen")
     announce("Pfeiltaste runter: nächste Zeile lesen")
-    announce("Pfeiltaste rechts: nächste Seite")
-    announce("Pfeiltaste links: vorige Seite")
+    announce("Pfeiltaste rechts: nächster Buchstabe")
+    announce("Pfeiltaste links: voriger Buchstabe")
     announce("Taste z: Zeilennummern vorlesen oder nicht")
     announce("Taste p: Pausieren der laufenden Sprachausgabe")
     announce("Plustaste: schneller sprechen")
     announce("Minustaste: langsamer sprechen")
-    announce("Taste l: löschen der bestehenden Bild- und Ergebnisdateien")
     announce("Escape: Programm beenden")
 
 
@@ -349,6 +392,8 @@ if os.name=='nt':
     DOWN_ARROW = 2621440   
     LEFT_ARROW = 2424832
     RIGHT_ARROW = 2555904
+    PAGEUP = 65366 # TBD
+    PAGEDOWN = 65365 # TBD
 else:
     onWindows=False
     #from gtts import gTTS
@@ -356,6 +401,8 @@ else:
     DOWN_ARROW = 65364
     LEFT_ARROW = 65361
     RIGHT_ARROW = 65363
+    PAGEUP = 65366
+    PAGEDOWN = 65365
 
 
 mixer.init()
@@ -439,18 +486,18 @@ while True:
         voiceSpeed += 10
         announce("Sprechgeschwindigkeit {} Prozent".format(voiceSpeed))
             
-    elif k == LEFT_ARROW:        # left arrow pressed
+    elif k == PAGEDOWN:        # previous page
         updateImage=True
         if (img_counter>1):
             img_counter-=1
         announce("Seite {}".format(img_counter))
 
-    elif k == RIGHT_ARROW:      # right arrow pressed
+    elif k == PAGEUP:          # next page
         updateImage=True
         img_counter+=1
         announce("Seite {}".format(img_counter))
 
-    elif k == UP_ARROW or k == DOWN_ARROW:     # up or down arrow pressed
+    elif k == UP_ARROW or k == DOWN_ARROW or k == RIGHT_ARROW or k == LEFT_ARROW:     # up or down arrow pressed
         announce("Zum Vorlesen der aktuellen Seite Taste v drücken")
 
     elif k%256 == ord(' '):     # SPACE pressed
