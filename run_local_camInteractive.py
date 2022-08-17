@@ -136,14 +136,18 @@ def readResult():
         announce ("Ergebnisdateien für diese Seite nicht vorhanden, bitte zuerst Bild verarbeiten")
         return
 
+
+    file1 = open(marked_name, 'r', encoding='utf-8', errors='ignore')
+    Lines = file1.readlines()
+    if (len (Lines) < 1):
+        announce ("es konnten keine Ergebnisse für diese Seite gefunden werden")
+        return
+
     windowName="OBR-Ergebnis Seite {}".format(img_counter)
     cv2.namedWindow(windowName)
     cv2.moveWindow(windowName, 50+WINDOW_WIDTH,40)
     img = cv2.imread(marked_jpg)
     cv2.imshow(windowName, resizeImg(img))
-    
-    file1 = open(marked_name, 'r', encoding='utf-8', errors='ignore')
-    Lines = file1.readlines()
       
     actLine = 0
     actLetter = -1
