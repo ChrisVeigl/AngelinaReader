@@ -32,28 +32,44 @@ from pygame import mixer
 import local_config
 import model.infer_retinanet as infer_retinanet
 
-
+# file paths and filename prefixes
 model_weights = 'model.t7'
 results_dir = './results'
 results_prefix = 'Seite'
 
-MIN_AREA=100000
-WINDOW_WIDTH=500
+MIN_AREA=100000   # for detecting a valid page
+WINDOW_WIDTH=500  # for displaying result windows
 
-lastKey=-1
-img_counter = 1
+# keycodes for windows and linux
+UP_ARROW_KEY_WINDOWS = 2490368
+DOWN_ARROW_KEY_WINDOWS = 2621440   
+LEFT_ARROW_KEY_WINDOWS = 2424832
+RIGHT_ARROW_KEY_WINDOWS = 2555904
+PAGEUP_KEY_WINDOWS = 2162688
+PAGEDOWN_KEY_WINDOWS = 2228224
+
+UP_ARROW_KEY_LINUX = 65362
+DOWN_ARROW_KEY_LINUX = 65364
+LEFT_ARROW_KEY_LINUX = 65361
+RIGHT_ARROW_KEY_LINUX = 65363
+PAGEUP_KEY_LINUX = 65366
+PAGEDOWN_KEY_LINUX = 65365
+
 voiceSpeed=150
-fromCam=False
-readLinenumbers=True
-frame=None
-cam=None
-fn=0
 
 currentLang = "de"
 langMapping = {
 	"de": "de-DE",
 	"en": "en-US"
 }
+
+lastKey=-1
+img_counter = 1
+fromCam=False
+readLinenumbers=True
+frame=None
+cam=None
+fn=0
 
 
 def announce (text):
@@ -88,7 +104,7 @@ def announce (text):
     # using pygame mixer to interrupt/pause voice playback!
     
     try:
-        if (os.path.getsize(tempFile) > 500):
+        if (os.path.getsize(tempFile) > 500):  # sanity check to prevent empty soundfile
             mixer.music.load(tempFile)        
             mixer.music.play()
     except:
@@ -170,17 +186,17 @@ def readResult():
             if readNextLine == False:
                 lastKey = cv2.waitKeyEx(10)
             
-        if (lastKey == UP_ARROW and actLine > 0):   # up arrow
+        if (lastKey == UP_ARROW_KEY and actLine > 0):   # up arrow
             actLine-=1
             actLetter=-1
             readNextLetter=False
             readNextLine=True
-        elif (lastKey == DOWN_ARROW and actLine < len(Lines)):   # down arrow
+        elif (lastKey == DOWN_ARROW_KEY and actLine < len(Lines)):   # down arrow
             actLine+=1
             actLetter=-1
             readNextLetter=False
             readNextLine=True
-        elif (lastKey == LEFT_ARROW):
+        elif (lastKey == LEFT_ARROW_KEY):
             readNextLine=False
             if (actLetter>0):
                 readNextLetter=True
@@ -188,7 +204,7 @@ def readResult():
             else:
                 announce("Zeilenanfang")
                 actLetter=-1
-        elif (lastKey == RIGHT_ARROW):
+        elif (lastKey == RIGHT_ARROW_KEY):
             readNextLine=False
             if (actLetter<len(line)-1):
                 readNextLetter=True
@@ -392,21 +408,21 @@ if os.name=='nt':
     speechSynthesizer.setProperty('voice', voices)
     speechSynthesizer.setProperty('rate', 200)
     speechSynthesizer.setProperty('volume', 0.7)
-    UP_ARROW = 2490368
-    DOWN_ARROW = 2621440   
-    LEFT_ARROW = 2424832
-    RIGHT_ARROW = 2555904
-    PAGEUP = 65366 # TBD
-    PAGEDOWN = 65365 # TBD
+    UP_ARROW_KEY = UP_ARROW_KEY_WINDOWS
+    DOWN_ARROW_KEY = DOWN_ARROW_KEY_WINDOWS 
+    LEFT_ARROW_KEY = LEFT_ARROW_KEY_WINDOWS
+    RIGHT_ARROW_KEY = RIGHT_ARROW_KEY_WINDOWS
+    PAGEUP_KEY = PAGEUP_KEY_WINDOWS
+    PAGEDOWN_KEY = PAGEDOWN_KEY_WINDOWS
 else:
     onWindows=False
     #from gtts import gTTS
-    UP_ARROW = 65362
-    DOWN_ARROW = 65364
-    LEFT_ARROW = 65361
-    RIGHT_ARROW = 65363
-    PAGEUP = 65366
-    PAGEDOWN = 65365
+    UP_ARROW_KEY = UP_ARROW_KEY_LINUX
+    DOWN_ARROW_KEY = DOWN_ARROW_KEY_LINUX
+    LEFT_ARROW_KEY = LEFT_ARROW_KEY_LINUX
+    RIGHT_ARROW_KEY = RIGHT_ARROW_KEY_LINUX
+    PAGEUP_KEY = PAGEUP_KEY_LINUX
+    PAGEDOWN_KEY = PAGEDOWN_KEY_LINUX
 
 
 mixer.init()
@@ -490,18 +506,18 @@ while True:
         voiceSpeed += 10
         announce("Sprechgeschwindigkeit {} Prozent".format(voiceSpeed))
             
-    elif k == PAGEDOWN:        # previous page
+    elif k == PAGEDOWN_KEY:        # previous page
         updateImage=True
         if (img_counter>1):
             img_counter-=1
         announce("Seite {}".format(img_counter))
 
-    elif k == PAGEUP:          # next page
+    elif k == PAGEUP_KEY:          # next page
         updateImage=True
         img_counter+=1
         announce("Seite {}".format(img_counter))
 
-    elif k == UP_ARROW or k == DOWN_ARROW or k == RIGHT_ARROW or k == LEFT_ARROW:     # up or down arrow pressed
+    elif k == UP_ARROW_KEY or k == DOWN_ARROW_KEY or k == RIGHT_ARROW_KEY or k == LEFT_ARROW_KEY:     # up or down arrow pressed
         announce("Zum Vorlesen der aktuellen Seite Taste v drücken")
 
     elif k%256 == ord(' '):     # SPACE pressed
