@@ -48,6 +48,7 @@ LEFT_ARROW_KEY_WINDOWS = 2424832
 RIGHT_ARROW_KEY_WINDOWS = 2555904
 PAGEUP_KEY_WINDOWS = 2162688
 PAGEDOWN_KEY_WINDOWS = 2228224
+DEL_KEY_WINDOWS = 3014656
 
 UP_ARROW_KEY_LINUX = 65362
 DOWN_ARROW_KEY_LINUX = 65364
@@ -55,6 +56,7 @@ LEFT_ARROW_KEY_LINUX = 65361
 RIGHT_ARROW_KEY_LINUX = 65363
 PAGEUP_KEY_LINUX = 65366
 PAGEDOWN_KEY_LINUX = 65365
+DEL_KEY_LINUX = 3014656  #TBD
 
 voiceSpeed=150
 
@@ -67,6 +69,7 @@ lastKey=-1
 img_counter = 1
 fromCam=False
 readLinenumbers=True
+replaceKey=False
 frame=None
 cam=None
 fn=0
@@ -139,10 +142,29 @@ def expandUnreadableCharacters(line,expandSpaceKey):
     line=line.replace("*", " (Stern) ")
     return(line)
 
+def exportResults():
+    actFile=1    
+    results_name = "{}result.txt".format(results_dir)
+    resultsFile = open(results_name, 'w', encoding='utf-8', errors='ignore')
+    while True:
+        marked_name = "{}{}{:04d}.marked.txt".format(results_dir,results_prefix,actFile)
+        if (os.path.exists(marked_name)):
+            file1 = open(marked_name, 'r', encoding='utf-8', errors='ignore')
+            Lines = file1.readlines()
+            file1.close()
+            resultsFile.writelines(Lines)
+        else:
+            break
+        actFile+=1
+
+    resultsFile.close()
+
+
 def readResult():
     global img_counter
     global readLinenumbers
     global lastKey
+    global replaceKey
 
     announce("Vorlesen der Ergebnisse für Seite {}".format(img_counter))
 
@@ -156,9 +178,12 @@ def readResult():
 
     file1 = open(marked_name, 'r', encoding='utf-8', errors='ignore')
     Lines = file1.readlines()
+    file1.close()
     if (len (Lines) < 1):
         announce ("es konnten keine Ergebnisse für diese Seite gefunden werden")
         return
+        
+    linesChanged=False
 
     windowName="OBR-Ergebnis Seite {}".format(img_counter)
     cv2.namedWindow(windowName)
@@ -186,6 +211,20 @@ def readResult():
         else:
             if readNextLine == False:
                 lastKey = cv2.waitKeyEx(10)
+                if (replaceKey==True) and lastKey>0:
+                    replaceKey=False
+                    strlist = list(line)
+                    strlist[actLetter] = chr(lastKey)
+                    announce ("durch "+chr(lastKey)+" ersetzt")
+                    line = ''.join(strlist)
+                    print (line, flush=True)
+                    Lines[actLine]=line
+                    linesChanged=True
+
+                    
+                if lastKey == DEL_KEY:
+                    announce ("Buchstabe "+letter+" ersetzen")
+                    replaceKey=True
             
         if (lastKey == UP_ARROW_KEY and actLine > 0):   # up arrow
             actLine-=1
@@ -229,6 +268,17 @@ def readResult():
             break
             
     cv2.destroyWindow(windowName)
+    if linesChanged ==True:
+        announce ("Änderungen speichern?")
+        if getYesNo()==True:
+            announce("Ja")
+            file1 = open(marked_name, 'w', encoding='utf-8', errors='ignore')
+            file1.writelines(Lines)
+            file1.close()
+        else:
+            announce("Nein")
+
+    
     
 def process_image (img,x,y,w,h):
     global img_counter
@@ -418,14 +468,15 @@ if os.name=='nt':
     speechSynthesizer = pyttsx3.init()
     selectVoice(speechSynthesizer, args.lang) 
     # speechSynthesizer.setProperty('voice', voices)
-    speechSynthesizer.setProperty('rate', 200)
-    speechSynthesizer.setProperty('volume', 0.7)
+    voiceSpeed=200
+    #speechSynthesizer.setProperty('volume', 0.7)
     UP_ARROW_KEY = UP_ARROW_KEY_WINDOWS
     DOWN_ARROW_KEY = DOWN_ARROW_KEY_WINDOWS 
     LEFT_ARROW_KEY = LEFT_ARROW_KEY_WINDOWS
     RIGHT_ARROW_KEY = RIGHT_ARROW_KEY_WINDOWS
     PAGEUP_KEY = PAGEUP_KEY_WINDOWS
     PAGEDOWN_KEY = PAGEDOWN_KEY_WINDOWS
+    DEL_KEY = DEL_KEY_WINDOWS
 else:
     onWindows=False
     #from gtts import gTTS
@@ -435,6 +486,7 @@ else:
     RIGHT_ARROW_KEY = RIGHT_ARROW_KEY_LINUX
     PAGEUP_KEY = PAGEUP_KEY_LINUX
     PAGEDOWN_KEY = PAGEDOWN_KEY_LINUX
+    DEL_KEY = DEL_KEY_LINUX
 
 
 mixer.init()
@@ -490,7 +542,8 @@ while True:
 
     k = cv2.waitKeyEx(10)
     if k%256 == 27:       # ESC pressed
-        announce("Escape gedrückt, Programm wird beendet")
+        announce("Programm wird beendet.")
+        exportResults()
         break
 
     elif k%256 == ord('l'):    # l pressed
