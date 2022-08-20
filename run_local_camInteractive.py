@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 #
-# Optical Braille Recognition - user interface and control script
+# Optical Braille Recognition - speech guided interactive user interface for Angelina Reader
 #
-# Place braille sheets (or book) on a dark background.
-# Set up light and camera as described here: https://angelina-reader.ru/help/#how_to_photo
 # This script either processes either
 #   a) single frames from a live webcam video or 
 #   b) existing images (in folder args.input_dir) 
-# When processing imanges, the script seperates bright area from background, 
+#
+# Place braille sheets (or book) on a dark background.
+# Set up light and camera as described here: https://angelina-reader.ru/help/#how_to_photo
+# When processing images, the script seperates bright area from background, 
 # then decides if orientation is portrait (1 page) or landscape (2 pages, book),
 # in case of landscape orientation extracts 2 single pages,
 # then performs optical braille recognition using Angelina Reader
