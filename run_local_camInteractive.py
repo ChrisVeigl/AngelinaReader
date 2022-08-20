@@ -57,10 +57,9 @@ PAGEDOWN_KEY_LINUX = 65365
 
 voiceSpeed=150
 
-currentLang = "de"
 langMapping = {
-	"de": "de-DE",
-	"en": "en-US"
+	"DE": ["de-DE","German"],
+	"EN": ["en-US","English"]
 }
 
 lastKey=-1
@@ -88,6 +87,7 @@ def announce (text):
         # speechSynthesizer.say(text)
         fn = (fn+1) % 2  # a workaround because ttsx3 does not close the most recent file correctly
         tempFile="temp{}.wav".format(fn)
+        speechSynthesizer.setProperty('rate', voiceSpeed)
         speechSynthesizer.save_to_file(text, tempFile)
         speechSynthesizer.runAndWait()
         speechSynthesizer.stop()
@@ -97,7 +97,7 @@ def announce (text):
         #tts.save("temp.mp3")
         
         # use PicoTTS
-        os.system('pico2wave --lang={} -w pico.wav "{}"'.format(langMapping.get(currentLang),text))
+        os.system('pico2wave --lang={} -w pico.wav "{}"'.format(langMapping.get(args.lang)[0],text))
         os.system("sox " + "pico.wav temp.wav tempo {}".format(voiceSpeed/100))
         tempFile="temp.wav"
 
@@ -125,6 +125,8 @@ def announce (text):
             pause = not pause
 
 def expandUnreadableCharacters(line,expandSpaceKey):
+    if (expandSpaceKey==True):
+        line=line.replace(" ", "(Leertaste) ")
     line=line.replace("~?~", " (unbekannt) ")
     line=line.replace("\"", " (Hochkomma) ")
     line=line.replace(":", " (Doppelpunkt) ")
@@ -134,8 +136,6 @@ def expandUnreadableCharacters(line,expandSpaceKey):
     line=line.replace("-", " (Minus) ")
     line=line.replace("+", " (Plus) ")
     line=line.replace("*", " (Stern) ")
-    if (expandSpaceKey==True):
-        line=line.replace(" ", "(Leertaste) ")
     return(line)
 
 def readResult():
@@ -399,13 +399,24 @@ if not Path(results_dir).exists():
     exit()
     
 
+def selectVoice(engine, language):
+    for voice in engine.getProperty('voices'):
+        print (voice)
+        #print(voice.languages)
+        #if language in voice.languages:   # didnt work under windows..
+        if voice.name.find(langMapping.get(language)[1]) > 0:
+            engine.setProperty('voice', voice.id)
+            return True
+
+    raise RuntimeError("Language '{}' not found".format(language))
+
 # Initialize the speech synthesizer and other OS-dependent resources
 if os.name=='nt':
     onWindows=True
     import pyttsx3
     speechSynthesizer = pyttsx3.init()
-    voices = speechSynthesizer.getProperty("voices")[0] 
-    speechSynthesizer.setProperty('voice', voices)
+    selectVoice(speechSynthesizer, args.lang) 
+    # speechSynthesizer.setProperty('voice', voices)
     speechSynthesizer.setProperty('rate', 200)
     speechSynthesizer.setProperty('volume', 0.7)
     UP_ARROW_KEY = UP_ARROW_KEY_WINDOWS
