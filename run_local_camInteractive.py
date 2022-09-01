@@ -216,7 +216,7 @@ def readResult():
                     strlist = list(line)
                     strlist[actLetter] = chr(lastKey)
                     announce ("durch "+chr(lastKey)+" ersetzt")
-                    line = ''.join(strlist)
+                    line = ''.join(strlist)+'\n'
                     print (line, flush=True)
                     Lines[actLine]=line
                     linesChanged=True
@@ -424,13 +424,14 @@ def printHelp():
     announce("Bildtaste runter: vorige Seite")
     announce("Pfeiltaste rauf: vorige Zeile lesen")
     announce("Pfeiltaste runter: nächste Zeile lesen")
-    announce("Pfeiltaste rechts: nächster Buchstabe")
-    announce("Pfeiltaste links: voriger Buchstabe")
+    announce("Pfeiltaste rechts: nächstes Zeichen")
+    announce("Pfeiltaste links: voriges Zeichen")
+    announce("Entfernen: Zeichen ersetzen")
     announce("Taste z: Zeilennummern vorlesen oder nicht")
     announce("Taste p: Pausieren der laufenden Sprachausgabe")
     announce("Plustaste: schneller sprechen")
     announce("Minustaste: langsamer sprechen")
-    announce("Escape: Programm beenden")
+    announce("Escape: Programm beenden und Textdatei speichern")
 
 
 # program execution starts here!
