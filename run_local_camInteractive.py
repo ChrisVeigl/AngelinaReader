@@ -33,6 +33,33 @@ from pygame import mixer
 import local_config
 import model.infer_retinanet as infer_retinanet
 
+
+
+# Initialize the speech synthesizer and other OS-dependent resources
+if os.name=='nt':
+    onWindows=True
+    import pyttsx3
+    voiceSpeed=200
+    UP_ARROW_KEY = 2490368
+    DOWN_ARROW_KEY = 2621440   
+    LEFT_ARROW_KEY = 2424832
+    RIGHT_ARROW_KEY = 2555904
+    PAGEUP_KEY = 2162688
+    PAGEDOWN_KEY = 2228224
+    DEL_KEY = 3014656
+else:
+    onWindows=False
+    #from gtts import gTTS
+    voiceSpeed=150
+    UP_ARROW_KEY = 65362
+    DOWN_ARROW_KEY = 65364
+    LEFT_ARROW_KEY = 65361
+    RIGHT_ARROW_KEY = 65363
+    PAGEUP_KEY = 65366
+    PAGEDOWN_KEY = 65365
+    DEL_KEY = 3014656  #TBD
+
+
 # file paths and filename prefixes
 model_weights = 'model.t7'
 results_dir = './results'
@@ -40,25 +67,6 @@ results_prefix = 'Seite'
 
 MIN_AREA=100000   # for detecting a valid page
 WINDOW_WIDTH=500  # for displaying result windows
-
-# keycodes for windows and linux
-UP_ARROW_KEY_WINDOWS = 2490368
-DOWN_ARROW_KEY_WINDOWS = 2621440   
-LEFT_ARROW_KEY_WINDOWS = 2424832
-RIGHT_ARROW_KEY_WINDOWS = 2555904
-PAGEUP_KEY_WINDOWS = 2162688
-PAGEDOWN_KEY_WINDOWS = 2228224
-DEL_KEY_WINDOWS = 3014656
-
-UP_ARROW_KEY_LINUX = 65362
-DOWN_ARROW_KEY_LINUX = 65364
-LEFT_ARROW_KEY_LINUX = 65361
-RIGHT_ARROW_KEY_LINUX = 65363
-PAGEUP_KEY_LINUX = 65366
-PAGEDOWN_KEY_LINUX = 65365
-DEL_KEY_LINUX = 3014656  #TBD
-
-voiceSpeed=150
 
 langMapping = {
 	"DE": ["de-DE","German"],
@@ -433,8 +441,21 @@ def printHelp():
     announce("Minustaste: langsamer sprechen")
     announce("Escape: Programm beenden und Textdatei speichern")
 
+def selectVoice(engine, language):
+    for voice in engine.getProperty('voices'):
+        print (voice)
+        #print(voice.languages)
+        #if language in voice.languages:   # didnt work under windows..
+        if voice.name.find(langMapping.get(language)[1]) > 0:
+            engine.setProperty('voice', voice.id)
+            return True
 
+    raise RuntimeError("Language '{}' not found".format(language))
+
+
+#
 # program execution starts here!
+#
 
 parser = argparse.ArgumentParser(description='Angelina Braille Reader: optical Braille text recognizer - interactive version using camera input.')
 parser.add_argument('input', nargs='?', type=str, help='(optional): Input source to be processed: directory name or "camera". If not specified, existing files in results folder will be used')
@@ -449,53 +470,22 @@ results_dir=os.path.join(results_dir, '')  # add trailing slash if necessary
 if not Path(results_dir).exists():
     print('results directory does not exist: ' + results_dir)
     exit()
-    
-
-def selectVoice(engine, language):
-    for voice in engine.getProperty('voices'):
-        print (voice)
-        #print(voice.languages)
-        #if language in voice.languages:   # didnt work under windows..
-        if voice.name.find(langMapping.get(language)[1]) > 0:
-            engine.setProperty('voice', voice.id)
-            return True
-
-    raise RuntimeError("Language '{}' not found".format(language))
 
 # Initialize the speech synthesizer and other OS-dependent resources
-if os.name=='nt':
-    onWindows=True
-    import pyttsx3
+if onWindows==True:
     speechSynthesizer = pyttsx3.init()
     selectVoice(speechSynthesizer, args.lang) 
-    # speechSynthesizer.setProperty('voice', voices)
     voiceSpeed=200
     #speechSynthesizer.setProperty('volume', 0.7)
-    UP_ARROW_KEY = UP_ARROW_KEY_WINDOWS
-    DOWN_ARROW_KEY = DOWN_ARROW_KEY_WINDOWS 
-    LEFT_ARROW_KEY = LEFT_ARROW_KEY_WINDOWS
-    RIGHT_ARROW_KEY = RIGHT_ARROW_KEY_WINDOWS
-    PAGEUP_KEY = PAGEUP_KEY_WINDOWS
-    PAGEDOWN_KEY = PAGEDOWN_KEY_WINDOWS
-    DEL_KEY = DEL_KEY_WINDOWS
 else:
-    onWindows=False
-    #from gtts import gTTS
-    UP_ARROW_KEY = UP_ARROW_KEY_LINUX
-    DOWN_ARROW_KEY = DOWN_ARROW_KEY_LINUX
-    LEFT_ARROW_KEY = LEFT_ARROW_KEY_LINUX
-    RIGHT_ARROW_KEY = RIGHT_ARROW_KEY_LINUX
-    PAGEUP_KEY = PAGEUP_KEY_LINUX
-    PAGEDOWN_KEY = PAGEDOWN_KEY_LINUX
-    DEL_KEY = DEL_KEY_LINUX
-
+    voiceSpeed=150
 
 mixer.init()
 
-# welcome message, create live window
+# welcome message
 announce("Programm startet ...")
 
-# Initialize the webcam and opencv
+# Initialize the webcam and opencv, create live window
 cv2.namedWindow("brailleImage")
 cv2.moveWindow("brailleImage", 10,50)
 
