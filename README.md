@@ -1,6 +1,7 @@
 # Angelina Braille Reader
 
 Angelina Braille Reader is an Optical Braille Recognition system. It is designed to convert Braille text on photos into plain text.
+This (forked) version provides the `run_local_camInteractive.py` script for live processing of camera/webcame images and a speech-guided menu for processing and appending text results of the braille recognition process (see Usage and Instructions for pyhsical setup).
 
 ## General description of the solution
 
@@ -121,10 +122,51 @@ Languages:
 `UZ` - Uzbek (cyrillic)
 `UZL` - Uzbek (latin)
 
+### Command-line interface for speech based interaction with live cam interface
+
+`python run_local_camInteractive.py [-h] [-l LANG] [-o] [input]`   
+
+Note that the `input` parameter is optional in this version. If not image source is provided, the live camera can be used to acquire image data.  
+Note that the ./results folder holds current image and text data. It must exit when starting the script.
+
+
+Parameters:   
+`input` - image file (jpg, png etc.), pdf file, zip file with images or directory name.   
+`-o` - switch off automatic orientation search. Sometimes auto orientation can work incorrectly (for non-typical texts or if there are many recognition errors). In such cases adjust image orientation manually and use `-o` option.   
+`-l <language>` - input document language (default is RU). Use `-l EN` for English texts, `-l GR` for Greek etc. See languages list below. 
+`-h` - print help.   
+
+
+Languages: see above
+
+Hotkeys:
+`h`: print and speak help text (including hotkey information, in german)
+`k`: enable live camera / change between stored images and live cam
+`<SPACE>`: start image processing for current page
+`l`: delete all stored image and text files
+`v`: read mode (reads/speaks out current page)
+`<PageUp>`: select next page
+`<PageDown>`: select previous page
+`<CursorUp>`: read/speak out previous line of current page
+`<CursorDown>`: read/speak out next line of current page
+`<CursorRight>`: read/speak out next character of current line
+`<CursorLeft>`: read/speak out previous character of current line
+`<Delete>`: replace current character (input new one)
+`z`: turn on/off line number readout
+`p`: pause/resume ongoing speech output
+`+`: increase speed of speech output
+`-`: decrease speed of speech output
+`Escape`: Exit read mode / exit program (results.txt is created when program is exited).
+
+
 ## Datasets being used
 
 Network weights: see repository `./weights` folder.
 
-## Auxiliary instruments
+## Instructions and recommendations for physical setup
 
-None.
+In order to achieve good and repeatable results, we experimented with different webcams and light sources.
+We achived good results with a Logitech HD pro C920 1080p Webcam, mounted 50 cm above the center of the braille page center.
+Two light sources are placed in a distance of 50 cm to the braille page center and with 50 cm distance to each other.
+(The light shines from top, so that the shadow is oriented towards the page bottom, see instructions on the Angelina Reader webpage).
+A dark table surface is important for the image segmentation which is applied before the processing in order to create two independent processing runs for a double sided image (e.g. a book with two pages).
