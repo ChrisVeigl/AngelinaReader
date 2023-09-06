@@ -66,7 +66,7 @@ results_dir = './results'
 results_prefix = 'Seite'
 
 MIN_AREA=100000   # for detecting a valid page
-WINDOW_WIDTH=500  # for displaying result windows
+WINDOW_WIDTH=800  # for displaying result windows
 
 langMapping = {
 	"DE": ["de-DE","German"],
