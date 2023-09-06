@@ -61,9 +61,19 @@ OS: Ubuntu, Windows
  Python path should be added to PATH.
 
 A client requires a standard web-browser (Chrome, Firefox) 
- 
+
+### Python CUDA support NVIDIA Jetson Nano
+
+On an Ubuntu 18.x on a NVIDIA Jetson:
+* use pytorch-1.10 and torchvision-0.11 from https://qengineering.eu/install-pytorch-on-jetson-nano.html
+* use numpy and other wheels from https://github.com/jetson-nano-wheels/jetson-nano-wheels
+* for pygame installation use https://forums.developer.nvidia.com/t/install-pygame-on-jetson-nano/83731/8
+* pip3 install -r requirements-jetson-nano.txt
+* pip3 install opencv-python
 
 ## Installation
+
+On NVDIA Jetson Nano use the python 3.6 wheels linked above to get CUDA support.
 
 ```
 sudo apt-get install libttspico-utils sox 
