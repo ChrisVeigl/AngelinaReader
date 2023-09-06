@@ -54,7 +54,7 @@ Standalone workstation requires NVIDIA GPU with at least 3GB memory (i.e. GeForc
 
 OS: Ubuntu, Windows   
  CUDA 10.2   
- Python 3.6+   
+ Python 3.8   
  python packages see requirements.txt   
  
  Python path should be added to PATH.
@@ -65,12 +65,15 @@ A client requires a standard web-browser (Chrome, Firefox)
 ## Installation
 
 ```
+sudo apt-get install libttspico-utils sox 
 git clone --recursive https://github.com/IlyaOvodov/AngelinaReader.git
 cd AngelinaReader
 pip install --upgrade pip
 pip install -r requirements.txt
+pip uninstall opencv-python-headless
+pip install opencv-python
 wget -O weights/model.t7 http://angelina-reader.ovdv.ru/retina_chars_eced60.clr.008    
-python run_web_app.py
+python run_local_camInteractive.py
 ```
 Windows: pip directory (i.e. `<python>\Scripts`) should be added to Path .   
 Be sure  `python` and `pip` start Python3 if both Python 3 and Python 2.7 are installed.   

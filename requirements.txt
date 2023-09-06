@@ -12,5 +12,6 @@ flask_mobility==0.1.1
 wtforms==2.2.1
 scikit-build
 albumentations==0.4.5
+pygame
 PyMuPDF>=1.17.5
 -e git+https://github.com/IlyaOvodov/OvoTools.git@asi#egg=OvoTools
