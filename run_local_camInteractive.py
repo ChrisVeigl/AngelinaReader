@@ -407,6 +407,8 @@ def openCamera():
     while i < 10:
         print("checking Camera {}".format(i))
         cam = cv2.VideoCapture(i)
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 800)
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
         ret, frame = cam.read()
         if ret:        
         # if cam.read()[0]:
@@ -486,7 +488,7 @@ mixer.init()
 announce("Programm startet ...")
 
 # Initialize the webcam and opencv, create live window
-cv2.namedWindow("brailleImage")
+cv2.namedWindow("brailleImage", cv2.WINDOW_AUTOSIZE)
 cv2.moveWindow("brailleImage", 10,50)
 
 # Initialize the Braille recognizer
