@@ -36,6 +36,11 @@ import model.infer_retinanet as infer_retinanet
 
 
 # Initialize the speech synthesizer and other OS-dependent resources
+
+BACKSPACE_KEY = 8
+ESCAPE_KEY = 27
+ENTER_KEY = 13
+
 if os.name=='nt':
     onWindows=True
     import pyttsx3
@@ -47,6 +52,8 @@ if os.name=='nt':
     PAGEUP_KEY = 2162688
     PAGEDOWN_KEY = 2228224
     DEL_KEY = 3014656
+    INSERT_KEY = 2949120
+    
 else:
     onWindows=False
     #from gtts import gTTS
@@ -57,7 +64,8 @@ else:
     RIGHT_ARROW_KEY = 65363
     PAGEUP_KEY = 65366
     PAGEDOWN_KEY = 65365
-    DEL_KEY = 3014656  #TBD
+    DEL_KEY = 3014656     #TBD
+    INSERT_KEY = 2949120  #TBD
 
 
 # file paths and filename prefixes
@@ -81,6 +89,11 @@ replaceKey=False
 frame=None
 cam=None
 fn=0
+PAGEMODE=1
+READMODE=2
+EDITMODE=3
+mode=PAGEMODE
+
 
 
 def announce (text):
@@ -138,16 +151,20 @@ def announce (text):
 
 def expandUnreadableCharacters(line,expandSpaceKey):
     if (expandSpaceKey==True):
-        line=line.replace(" ", "(Leertaste) ")
-    line=line.replace("~?~", " (unbekannt) ")
-    line=line.replace("\"", " (Hochkomma) ")
-    line=line.replace(":", " (Doppelpunkt) ")
-    line=line.replace(";", " (Strichpunkt) ")
-    line=line.replace(",", " (Beistrich) ")
-    line=line.replace(".", " (Punkt) ")
-    line=line.replace("-", " (Minus) ")
-    line=line.replace("+", " (Plus) ")
-    line=line.replace("*", " (Stern) ")
+        line=line.replace(" ", "Leertaste ")
+    line=line.replace("(", " Klammer auf ")
+    line=line.replace(")", " Klammer zu ")
+    line=line.replace("~", " unbekannt ")
+    line=line.replace("\"", " Hochkomma ")
+    line=line.replace(":", " Doppelpunkt ")
+    line=line.replace(";", " Strichpunkt ")
+    line=line.replace(",", " Beistrich ")
+    line=line.replace(".", " Punkt ")
+    line=line.replace("-", " Minus ")
+    line=line.replace("+", " Plus ")
+    line=line.replace("*", " Stern ")
+    line=line.replace("!", " Rufzeichen ")
+    line=line.replace("?", " Fragezeichen ")
     return(line)
 
 def exportResults():
@@ -173,8 +190,9 @@ def readResult():
     global readLinenumbers
     global lastKey
     global replaceKey
+    global mode
 
-    announce("Vorlesen der Ergebnisse für Seite {}".format(img_counter))
+    announce("Lesen und Editieren Seite {}".format(img_counter))
 
     marked_name = "{}{}{:04d}.marked.txt".format(results_dir,results_prefix,img_counter)
     marked_jpg = "{}{}{:04d}.marked.jpg".format(results_dir,results_prefix,img_counter)    
@@ -183,16 +201,16 @@ def readResult():
         announce ("Ergebnisdateien für diese Seite nicht vorhanden, bitte zuerst Bild verarbeiten")
         return
 
-
     file1 = open(marked_name, 'r', encoding='utf-8', errors='ignore')
     Lines = file1.readlines()
     file1.close()
     if (len (Lines) < 1):
         announce ("es konnten keine Ergebnisse für diese Seite gefunden werden")
         return
+    for i in range (len(Lines)):
+        Lines[i]=Lines[i].replace("~?~", "~")
+    
         
-    linesChanged=False
-
     windowName="OBR-Ergebnis Seite {}".format(img_counter)
     cv2.namedWindow(windowName)
     cv2.moveWindow(windowName, 50+WINDOW_WIDTH,40)
@@ -203,89 +221,138 @@ def readResult():
     actLetter = -1
     readNextLetter = False
     readNextLine = True
-    while True:
-        if readNextLine == True:
-            line=Lines[actLine].strip()
-            line=expandUnreadableCharacters(line, False)
-            if (readLinenumbers==True):
-                announce("Zeile{}: {}".format(actLine+1, line.strip()))
-            else:
-                announce(line.strip())
-        elif readNextLetter == True:
-            line=Lines[actLine].strip()
-            letter=line[actLetter]
-            announce(expandUnreadableCharacters(letter,True))
-            readNextLetter=False
-        else:
-            if readNextLine == False:
-                lastKey = cv2.waitKeyEx(10)
-                if (replaceKey==True) and lastKey>0:
-                    replaceKey=False
+    linesChanged=False
+    mode=READMODE
+    
+    while mode!=PAGEMODE:
+
+        if mode==READMODE:
+            lastKey=-1
+            if readNextLine == True:
+                line=Lines[actLine]
+                line=expandUnreadableCharacters(line, False)
+                if (readLinenumbers==True):
+                    announce("Zeile{}: {}".format(actLine+1, line.strip()))
+                else:
+                    announce(line.strip())
+            elif readNextLetter == True:
+                line=Lines[actLine]
+                letter=line[actLetter]
+                announce(expandUnreadableCharacters(letter,True))
+                readNextLetter=False
+            if lastKey==-1:
+                lastKey = cv2.waitKeyEx(10)                
+
+            if (lastKey == UP_ARROW_KEY and actLine > 0):
+                actLine-=1
+                readNextLetter=False
+                readNextLine=True
+
+            elif (lastKey == DOWN_ARROW_KEY and actLine < len(Lines)):
+                actLine+=1
+                actLetter=-1
+                readNextLetter=False
+                readNextLine=True
+
+            elif lastKey == RIGHT_ARROW_KEY:
+                readNextLine=False
+                if (actLetter<len(line)-1):
+                    readNextLetter=True
+                    actLetter+=1
+                else:
+                    announce("Zeilenende")
+                    actLetter=len(line)
+
+            elif lastKey == LEFT_ARROW_KEY: 
+                readNextLine=False
+                if (actLetter>0):
+                    readNextLetter=True
+                    actLetter-=1
+                else:
+                    announce("Zeilenanfang")
+                    actLetter=-1
+
+            elif lastKey == ord('z'):
+                readLinenumbers = not readLinenumbers
+                if (readLinenumbers==True):
+                    announce("Zeilennummern werden vorgelesen")
+                else:
+                    announce("Zeilennummern werden nicht vorgelesen")
+
+            elif lastKey == ord('h'):
+                printHelpReadmode()
+                readNextLine=False
+
+            if readNextLine==False:
+                if lastKey == BACKSPACE_KEY:
+                    announce ("1 drücken für Zeichen löschen, 2 für Zeile löschen")
+                    option=getOption(2)
+                    if option == 1:
+                        if (actLetter<1):
+                            Lines[actLine] = Lines[actLine][1:]
+                        else:
+                            Lines[actLine] = Lines[actLine][:actLetter] + Lines[actLine][actLetter+1:]
+                        announce ("Zeichen gelöscht")
+                        linesChanged=True
+                    if option == 2:
+                        Lines=Lines[:actLine]+Lines[actLine+1:]
+                        announce ("Zeile gelöscht")
+                        linesChanged=True
+                    
+                elif lastKey == INSERT_KEY:
+                    announce ("1 drücken für Zeichen einfügen, 2 für Zeile einfügen")
+                    option=getOption(2)
+                    if (option == 1):
+                        Lines[actLine]= Lines[actLine][:actLetter+1] + ' ' + Lines[actLine][actLetter+1:]
+                        announce ("Leerzeichen eingefügt")
+                        linesChanged=True
+                    elif (option == 2):
+                        Lines.insert(actLine," ")
+                        announce ("Leere Zeile eingefügt")
+                        linesChanged=True
+                        
+                elif lastKey == DEL_KEY:
+                    announce ("Buchstabe "+expandUnreadableCharacters(letter,True)+" ersetzen")
+                    mode=EDITMODE
+                    lastKey=0
+
+        if mode==EDITMODE:
+            lastKey = cv2.waitKeyEx(10)
+            if (lastKey>0):  
+                if (lastKey<0x110000):
                     strlist = list(line)
                     strlist[actLetter] = chr(lastKey)
-                    announce ("durch "+chr(lastKey)+" ersetzt")
+                    letter=chr(lastKey)
+                    announce ("durch "+expandUnreadableCharacters(chr(lastKey),True)+" ersetzt")
                     line = ''.join(strlist)+'\n'
                     print (line, flush=True)
                     Lines[actLine]=line
                     linesChanged=True
+                else:
+                    announce ("Ersetzen beendet")
+                mode=READMODE     
 
-                    
-                if lastKey == DEL_KEY:
-                    announce ("Buchstabe "+letter+" ersetzen")
-                    replaceKey=True
-            
-        if (lastKey == UP_ARROW_KEY and actLine > 0):   # up arrow
-            actLine-=1
-            actLetter=-1
-            readNextLetter=False
-            readNextLine=True
-        elif (lastKey == DOWN_ARROW_KEY and actLine < len(Lines)):   # down arrow
-            actLine+=1
-            actLetter=-1
-            readNextLetter=False
-            readNextLine=True
-        elif (lastKey == LEFT_ARROW_KEY):
-            readNextLine=False
-            if (actLetter>0):
-                readNextLetter=True
-                actLetter-=1
+        if (lastKey == -1) and (readNextLine == True):   # no key -> progress to next line!
+            if (actLine < len (Lines)):
+                actLine+=1
             else:
-                announce("Zeilenanfang")
-                actLetter=-1
-        elif (lastKey == RIGHT_ARROW_KEY):
-            readNextLine=False
-            if (actLetter<len(line)-1):
-                readNextLetter=True
-                actLetter+=1
-            else:
-                announce("Zeilenende")
-                actLetter=len(line)
-        elif (lastKey == -1) and (readNextLine == True):   # no key -> progress to next line!
-            actLine+=1
-        elif (lastKey == 27):   # ESC: end readout
+                readNextLine=False
+                
+        if (lastKey == ESCAPE_KEY):
             actLine = len(Lines)
-            announce ("Vorlesemodus beendet")
-        elif lastKey == ord('z'):   # z pressed
-            readLinenumbers = not readLinenumbers
-            if (readLinenumbers==True):
-                announce("Zeilennummern werden vorgelesen")
-            else:
-                announce("Zeilennummern werden nicht vorgelesen")
-            
-        if actLine == len (Lines):
-            break
-            
+            announce ("Lesemodus beendet")
+            if linesChanged ==True:
+                announce ("Sollen die Änderungen gespeichert werden?")
+                if getYesNo()==True:
+                    announce("Ja")
+                    file1 = open(marked_name, 'w', encoding='utf-8', errors='ignore')
+                    file1.writelines(Lines)
+                    file1.close()
+                else:
+                    announce("Nein")
+            mode=PAGEMODE
+      
     cv2.destroyWindow(windowName)
-    if linesChanged ==True:
-        announce ("Änderungen speichern?")
-        if getYesNo()==True:
-            announce("Ja")
-            file1 = open(marked_name, 'w', encoding='utf-8', errors='ignore')
-            file1.writelines(Lines)
-            file1.close()
-        else:
-            announce("Nein")
-
     
     
 def process_image (img,x,y,w,h):
@@ -393,6 +460,20 @@ def getYesNo():
         else:
             announce("bitte j für ja oder n für nein drücken")
 
+def getOption(max):
+    while (True):
+        k=cv2.waitKey(10)
+        if k>=ord('1') and k<=ord('1')+max:
+            return k-ord('1')+1
+        if k%256==ESCAPE_KEY:
+            announce("Auswahl abgebrochen")
+            return(-1)
+        if k==-1 or k==0 or k==255:
+            continue
+        else:
+            announce("bitte Option mit den Zifferntasten wählen oder Escape zum Abbrechen drücken")
+
+
 def resizeImg(image):
     (h, w) = image.shape[:2]
     r = WINDOW_WIDTH / float(w)
@@ -425,23 +506,30 @@ def openCamera():
         i+=1       
 
 def printHelp():
-    announce("Taste h: Ausgabe Hilfetext")
+    announce("Taste h: Hilfetext Hauptmenü")
     announce("Taste k: zwischen Kamera und Bilddateien wechseln")
-    announce("Leertaste: Bildverarbeitung der aktuellen Seite starten")
-    announce("Taste l: löschen der bestehenden Bild- und Ergebnisdateien")
-    announce("Taste v: Vorlesemodus")
-    announce("Bildtaste rauf: nächste Seite")
-    announce("Bildtaste runter: vorige Seite")
-    announce("Pfeiltaste rauf: vorige Zeile lesen")
-    announce("Pfeiltaste runter: nächste Zeile lesen")
-    announce("Pfeiltaste rechts: nächstes Zeichen")
-    announce("Pfeiltaste links: voriges Zeichen")
-    announce("Entfernen: Zeichen ersetzen")
-    announce("Taste z: Zeilennummern vorlesen oder nicht")
-    announce("Taste p: Pausieren der laufenden Sprachausgabe")
+    announce("Leertaste: Übersetzung der aktuellen Seite starten")
+    announce("Bildtaste rauf: vorige Seite")
+    announce("Bildtaste runter: nächste Seite")
+    announce("Entertaste: zum Lesemodus wechseln")
     announce("Plustaste: schneller sprechen")
     announce("Minustaste: langsamer sprechen")
+    announce("Taste l: löschen aller bestehenden Bild- und Ergebnisdateien")
     announce("Escape: Programm beenden und Textdatei speichern")
+
+def printHelpReadmode():
+    announce("Taste h: Hilfetext Lesemodus")
+    announce("Pfeiltaste rauf: vorige Zeile")
+    announce("Pfeiltaste runter: nächste Zeile")
+    announce("Pfeiltaste links: voriges Zeichen")
+    announce("Pfeiltaste rechts: nächstes Zeichen")
+    announce("Entfernen: Zeichen ersetzen")
+    announce("Einfügen: Leerzeichen oder leere Zeile einfügen")
+    announce("Backspace: Zeichen oder Zeile löschen")
+    announce("Taste z: Zeilennummern vorlesen oder nicht")
+    announce("Taste p: Pausieren der laufenden Sprachausgabe")
+    announce("Escape: Lesemodus beenden")
+
 
 def selectVoice(engine, language):
     for voice in engine.getProperty('voices'):
@@ -534,7 +622,7 @@ while True:
         cv2.imshow("brailleImage", resizeImg(frame))
 
     k = cv2.waitKeyEx(10)
-    if k%256 == 27:       # ESC pressed
+    if k%256 == ESCAPE_KEY:       # ESC pressed
         announce("Programm wird beendet.")
         exportResults()
         break
@@ -550,9 +638,6 @@ while True:
             announce("Kamera ausgeschaltet - verwende bestehende Ergebnisdateien")
         updateImage=True
 
-    elif k%256 == ord('v'):    # v pressed
-        readResult()            
-
     elif k%256 == ord('h'):    # h pressed
         printHelp()
         
@@ -564,19 +649,24 @@ while True:
         voiceSpeed += 10
         announce("Sprechgeschwindigkeit {} Prozent".format(voiceSpeed))
             
-    elif k == PAGEDOWN_KEY:        # previous page
+    elif k == PAGEUP_KEY:        # previous page
         updateImage=True
         if (img_counter>1):
             img_counter-=1
-        announce("Seite {}".format(img_counter))
+            announce("Seite {}".format(img_counter))
+        else:
+            announce("Bereits auf Seite eins")
 
-    elif k == PAGEUP_KEY:          # next page
+    elif k == PAGEDOWN_KEY:          # next page
         updateImage=True
         img_counter+=1
         announce("Seite {}".format(img_counter))
 
     elif k == UP_ARROW_KEY or k == DOWN_ARROW_KEY or k == RIGHT_ARROW_KEY or k == LEFT_ARROW_KEY:     # up or down arrow pressed
-        announce("Zum Vorlesen der aktuellen Seite Taste v drücken")
+        announce("Zum Wechseln in den Vorlesemodus Entertaste drücken")
+
+    elif k%256 == ENTER_KEY:    # ENTER pressed
+        readResult()            
 
     elif k%256 == ord(' '):     # SPACE pressed
         updateImage=True
