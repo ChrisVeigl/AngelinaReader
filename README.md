@@ -136,8 +136,8 @@ Languages:
 
 `python run_local_camInteractive.py [-h] [-l LANG] [-o] [input]`   
 
-Note that the `input` parameter is optional in this version. If not image source is provided, the live camera can be used to acquire image data.  
-Note that the ./results folder holds current image and text data. It must exit when starting the script.
+Note that the `input` parameter is optional in this version. If no image source is provided, a live camera can be used to acquire image data.  
+Note that the ./results folder holds current image and text data. In this folder, a file named result.txt will be generated which contails the accumulated text for all processed pages.
 
 
 Parameters:   
@@ -149,25 +149,30 @@ Parameters:
 
 Languages: see above
 
-Hotkeys:
+Hotkeys in main menu:
 `h`: print and speak help text (including hotkey information, in german)
 `k`: enable live camera / change between stored images and live cam
 `<SPACE>`: start image processing for current page
 `l`: delete all stored image and text files
-`v`: read mode (reads/speaks out current page)
-`<PageUp>`: select next page
-`<PageDown>`: select previous page
+`<ENTER>`: switch to read mode (read and edit translated text for currrent page)
+`<PageUp>`: select previous page
+`<PageDown>`: select next page
+`Escape`: exit program (results.txt is created when program is exited)
+
+
+Hotkeys in read mode:
 `<CursorUp>`: read/speak out previous line of current page
 `<CursorDown>`: read/speak out next line of current page
 `<CursorRight>`: read/speak out next character of current line
 `<CursorLeft>`: read/speak out previous character of current line
 `<Delete>`: replace current character (input new one)
+`<Insert>`: insert a character or line
+`<Backspace>`: remove a character or line
 `z`: turn on/off line number readout
 `p`: pause/resume ongoing speech output
 `+`: increase speed of speech output
 `-`: decrease speed of speech output
-`Escape`: Exit read mode / exit program (results.txt is created when program is exited).
-
+`Escape`: Exit read mode (changes can be saved or discarded)
 
 ## Datasets being used
 
