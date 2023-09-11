@@ -1,11 +1,12 @@
 # Angelina Braille Reader
 
 Angelina Braille Reader is an Optical Braille Recognition system. It is designed to convert Braille text on photos into plain text.
-This (forked) version provides the `run_local_camInteractive.py` script for live processing of camera/webcame images and a speech-guided menu for processing and appending text results of the braille recognition process (see Usage and Instructions for pyhsical setup).
+This (forked) version provides the `run_local_camInteractive.py` script for live processing of camera/webcam images and a voice-guided user interface for 
+processing and appending text results of the braille recognition process (see *Usage and Instructions* for pyhsical setup).
 
 ## General description of the solution
 
-The solution is a web-service.
+The original solution is a web-service.
 
 Users interact with it via a standard web browser on a smartphone or a desktop computer. Results are displayed on the screen as images and text and can be sent to the user's E-mail.
 
@@ -60,20 +61,10 @@ OS: Ubuntu, Windows
  
  Python path should be added to PATH.
 
-A client requires a standard web-browser (Chrome, Firefox) 
+If the webservice is used, a client requires a standard web-browser (Chrome, Firefox) 
 
-### Python CUDA support NVIDIA Jetson Nano
-
-On an Ubuntu 18.x on a NVIDIA Jetson:
-* use pytorch-1.10 and torchvision-0.11 from https://qengineering.eu/install-pytorch-on-jetson-nano.html
-* use numpy and other wheels from https://github.com/jetson-nano-wheels/jetson-nano-wheels
-* for pygame installation use https://forums.developer.nvidia.com/t/install-pygame-on-jetson-nano/83731/8
-* pip3 install -r requirements-jetson-nano.txt
-* pip3 install opencv-python
 
 ## Installation
-
-On NVDIA Jetson Nano use the python 3.6 wheels linked above to get CUDA support.
 
 ```
 sudo apt-get install libttspico-utils sox 
@@ -89,19 +80,29 @@ python run_local_camInteractive.py
 Windows: pip directory (i.e. `<python>\Scripts`) should be added to Path .   
 Be sure  `python` and `pip` start Python3 if both Python 3 and Python 2.7 are installed.   
 
-Open http://127.0.0.1:5000 in a browser. The main page of the application should be displayed.
+### Installation of python CUDA support on NVIDIA Jetson Nano (experimental)
 
-To access the application from Internet forward port 80 to port 5000 of the server. It is not required to test the service locally (at http://127.0.0.1:5000 address).  
+On an Ubuntu 18.x on a NVIDIA Jetson:
+* use pytorch-1.10 and torchvision-0.11 from https://qengineering.eu/install-pytorch-on-jetson-nano.html
+* use numpy and other wheels from https://github.com/jetson-nano-wheels/jetson-nano-wheels
+* for pygame installation use https://forums.developer.nvidia.com/t/install-pygame-on-jetson-nano/83731/8
+* pip3 install -r requirements-jetson-nano.txt
+* pip3 install opencv-python
+
+
 
 
 ## Usage
 
 ### Using as a web service
 
+
 start server: `python run_web_app.py`
 For Windows: you can use bat-file `start_web_app.bat`
 
 Open page http://127.0.0.1:5000 in a browser. Follow instructions.
+
+To access the application from Internet forward port 80 to port 5000 of the server. It is not required to test the service locally (at http://127.0.0.1:5000 address).  
 
 If some Braille symbols can not be interpreted by the application, they are displayed as `~?~`.
 
@@ -109,7 +110,7 @@ Usage of web-application is demonstrated in a brief video: https://youtu.be/_vcv
 
 
 ### Command-line interface 
-
+s
 `python run_local.py [-h] [-l LANG] [-o] [-2] input [results_dir]`   
 or, in Windows:   
 `start.bat [-h] [-l LANG] [-o] [-2] input [results_dir]`   
@@ -132,51 +133,51 @@ Languages:
 `UZ` - Uzbek (cyrillic)
 `UZL` - Uzbek (latin)
 
-### Command-line interface for speech based interaction with live cam interface
 
-`python run_local_camInteractive.py [-h] [-l LANG] [-o] [input]`   
+### Command-line interface for script `run_local_camInteractive.py` 
 
-Note that the `input` parameter is optional in this version. If no image source is provided, a live camera can be used to acquire image data.  
-Note that the ./results folder holds current image and text data. In this folder, a file named result.txt will be generated which contails the accumulated text for all processed pages.
+These instructions are relevant for the python script `run_local_camInteractive.py` which provides a voice-guided user interface and live image processing from a locally connected webcam.
+
+
+`python run_local_camInteractive.py [-h] [-l LANG] [-u UI-LANG] [-o] [input]`   
 
 
 Parameters:   
-`input` - image file (jpg, png etc.), pdf file, zip file with images or directory name.   
+`input` - image file (jpg, png, pdf, zip file with images or directory name) or 'camera' if webcam shall be used.   
 `-o` - switch off automatic orientation search. Sometimes auto orientation can work incorrectly (for non-typical texts or if there are many recognition errors). In such cases adjust image orientation manually and use `-o` option.   
-`-l <language>` - input document language (default is RU). Use `-l EN` for English texts, `-l GR` for Greek etc. See languages list below. 
+`-l <language>` - input document language (default is DE). Use `-l EN` for English texts (see suported languages list above.) 
+`-u <language>` - user interface language (default is DE, currently DE and EN are supported). See `data_i18n/ReadMe_i18n.txt` for instructions how to translate the user interface.  
+`-s` - silent mode (switch off speech output).   
 `-h` - print help.   
 
+Note that all parameters (also `input`) are optional in this version! If no input parameter is provided, a keyboard hotkey cam be used to switch bewteen webcam or previously acqired images which are located in the folder `./results`. 
+Note that the `./results` folder holds current image and text data. In this folder, the file `result.txt` is generated when the program exits. This file contails the accumulated text of all processed pages.
 
-Languages: see above
 
 Hotkeys in main menu:
 `h`: print and speak help text (including hotkey information, in german)
 `k`: enable live camera / change between stored images and live cam
 `<SPACE>`: start image processing for current page
-`l`: delete all stored image and text files
-`<ENTER>`: switch to read mode (read and edit translated text for currrent page)
+`<ENTER>`: switch to read/edit mode (read and edit translated text for currrent page)
 `<PageUp>`: select previous page
 `<PageDown>`: select next page
-`Escape`: exit program (results.txt is created when program is exited)
+`+`: increase speed of speech output
+`-`: decrease speed of speech output
+`l`: delete all stored image and text files
+`Escape`: exit program (file `results.txt` is created when program exits)
 
 
-Hotkeys in read mode:
+Hotkeys in read/edit mode:
 `<CursorUp>`: read/speak out previous line of current page
 `<CursorDown>`: read/speak out next line of current page
 `<CursorRight>`: read/speak out next character of current line
 `<CursorLeft>`: read/speak out previous character of current line
-`<Delete>`: replace current character (input new one)
+`<Delete>`: replace current character (new character is accepted from keyboard)
 `<Insert>`: insert a character or line
 `<Backspace>`: remove a character or line
 `z`: turn on/off line number readout
 `p`: pause/resume ongoing speech output
-`+`: increase speed of speech output
-`-`: decrease speed of speech output
-`Escape`: Exit read mode (changes can be saved or discarded)
-
-## Datasets being used
-
-Network weights: see repository `./weights` folder.
+`Escape`: Exit read mode (changes of the current page text file can be saved or discarded)
 
 ## Instructions and recommendations for physical setup
 
@@ -185,3 +186,7 @@ We achived good results with a Logitech HD pro C920 1080p Webcam, mounted 50 cm 
 Two light sources are placed in a distance of 50 cm to the braille page center and with 50 cm distance to each other.
 (The light shines from top, so that the shadow is oriented towards the page bottom, see instructions on the Angelina Reader webpage).
 A dark table surface is important for the image segmentation which is applied before the processing in order to create two independent processing runs for a double sided image (e.g. a book with two pages).
+
+## Datasets being used
+
+Network weights: see repository `./weights` folder.
