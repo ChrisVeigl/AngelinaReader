@@ -1,8 +1,11 @@
 # Angelina Braille Reader
 
 Angelina Braille Reader is an Optical Braille Recognition system. It is designed to convert Braille text on photos into plain text.
+For up-to-date documentation and instructions regarding the original (online-/web-) service version, please refer to: https://github.com/IlyaOvodov/AngelinaReader 
+The service is available at the address: http://angelina-reader.ru   
+
 This (forked) version provides the `run_local_camInteractive.py` script for live processing of camera/webcam images and a voice-guided user interface for 
-processing and appending text results of the braille recognition process (see *Usage and Instructions* for pyhsical setup).
+processing and appending text results of the braille recognition process (see *Usage* and *Instructions for pyhsical setup*).
 
 ## General description of the solution
 
@@ -13,8 +16,6 @@ Users interact with it via a standard web browser on a smartphone or a desktop c
 This solution can also be installed as a standalone program on a personal computer and can be used through a command-line interface.
 
 Video presentation: https://youtu.be/_vcvxPtAzOM   
-
-This service is available at the address: http://angelina-reader.ru   
 
 
 ### Solution key features
@@ -35,7 +36,7 @@ This service is available at the address: http://angelina-reader.ru
 
 * Page image must be taken approximately from a top view
 * Light must fall from the upper side of the page. I.e. shadow of a subject placed on a page must be directed at the bottom side of the page. Top light, side light, and light from the bottom side of the page are not allowed.
-* Braille symbols must not be too small or too large. Optimally A4 page with standard braille text must  occupy the whole image area.
+* Braille symbols must not be too small or too large. Optimally A4 page with standard braille text must occupy the whole image area.
 
 ### Approaches used in the project
 
@@ -74,7 +75,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 pip uninstall opencv-python-headless
 pip install opencv-python
-wget -O weights/model.t7 http://angelina-reader.ovdv.ru/retina_chars_eced60.clr.008    
+wget -O weights/model.t7 http://ovdv.ru/files/retina_chars_eced60.clr.008
 python run_local_camInteractive.py
 ```
 Windows: pip directory (i.e. `<python>\Scripts`) should be added to Path .   
@@ -110,10 +111,12 @@ Usage of web-application is demonstrated in a brief video: https://youtu.be/_vcv
 
 
 ### Command-line interface 
-s
+
+run 
 `python run_local.py [-h] [-l LANG] [-o] [-2] input [results_dir]`   
 or, in Windows:   
 `start.bat [-h] [-l LANG] [-o] [-2] input [results_dir]`   
+
 Parameters:   
 `input` - image file (jpg, png etc.), pdf file, zip file with images or directory name.   
 If directory name or zip file is supplied, all image and pdf files in it will be processed.   
@@ -178,6 +181,7 @@ Hotkeys in read/edit mode:
 `z`: turn on/off line number readout
 `p`: pause/resume ongoing speech output
 `Escape`: Exit read mode (changes of the current page text file can be saved or discarded)
+
 
 ## Instructions and recommendations for physical setup
 
