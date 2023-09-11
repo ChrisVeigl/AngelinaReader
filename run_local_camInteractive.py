@@ -29,10 +29,18 @@ import glob
 import argparse
 from pathlib import Path
 from pygame import mixer
+import gettext
 
 import local_config
 import model.infer_retinanet as infer_retinanet
 
+
+translations = {}
+supported_langs = ['en', 'de']
+
+# load translation files dynamically
+for lang in supported_langs:
+    translations[lang] = gettext.translation('messages', localedir='data_i18n', languages=[lang])
 
 
 # Initialize the speech synthesizer and other OS-dependent resources
@@ -74,7 +82,7 @@ results_dir = './results'
 results_prefix = 'Seite'
 
 MIN_AREA=100000   # for detecting a valid page
-WINDOW_WIDTH=800  # for displaying result windows
+WINDOW_WIDTH=700  # for displaying result windows
 
 langMapping = {
 	"DE": ["de-DE","German"],
@@ -101,7 +109,7 @@ def announce (text):
     global lastKey
 
     if (len(text)==0):
-        announce ("leere Zeile")
+        announce (_("leere Zeile"))
         return
         
     print(text, flush=True)
@@ -122,7 +130,7 @@ def announce (text):
         #tts.save("temp.mp3")
         
         # use PicoTTS
-        os.system('pico2wave --lang={} -w pico.wav "{}"'.format(langMapping.get(args.lang)[0],text))
+        os.system('pico2wave --lang={} -w pico.wav "{}"'.format(langMapping.get(args.UIlang)[0],text))
         os.system("sox " + "pico.wav temp.wav tempo {}".format(voiceSpeed/100))
         tempFile="temp.wav"
 
@@ -133,7 +141,7 @@ def announce (text):
             mixer.music.load(tempFile)        
             mixer.music.play()
     except:
-        print ("Could not play music file (maybe empty)!")
+        print (_("Could not play music file (maybe empty)!"))
     
     pause=False
     lastKey=-1
@@ -192,20 +200,20 @@ def readResult():
     global replaceKey
     global mode
 
-    announce("Lesen und Editieren Seite {}".format(img_counter))
+    announce(_("Lesen und Editieren Seite {}").format(img_counter))
 
     marked_name = "{}{}{:04d}.marked.txt".format(results_dir,results_prefix,img_counter)
     marked_jpg = "{}{}{:04d}.marked.jpg".format(results_dir,results_prefix,img_counter)    
 
     if (not os.path.exists(marked_name)) or (not os.path.exists(marked_jpg)):
-        announce ("Ergebnisdateien für diese Seite nicht vorhanden, bitte zuerst Bild verarbeiten")
+        announce (_("Ergebnisdateien für diese Seite nicht vorhanden, bitte zuerst Bild verarbeiten"))
         return
 
     file1 = open(marked_name, 'r', encoding='utf-8', errors='ignore')
     Lines = file1.readlines()
     file1.close()
     if (len (Lines) < 1):
-        announce ("es konnten keine Ergebnisse für diese Seite gefunden werden")
+        announce (_("es konnten keine Ergebnisse für diese Seite gefunden werden"))
         return
     for i in range (len(Lines)):
         Lines[i]=Lines[i].replace("~?~", "~")
@@ -232,7 +240,7 @@ def readResult():
                 line=Lines[actLine]
                 line=expandUnreadableCharacters(line, False)
                 if (readLinenumbers==True):
-                    announce("Zeile{}: {}".format(actLine+1, line.strip()))
+                    announce(_("Zeile{}: {}").format(actLine+1, line.strip()))
                 else:
                     announce(line.strip())
             elif readNextLetter == True:
@@ -260,7 +268,7 @@ def readResult():
                     readNextLetter=True
                     actLetter+=1
                 else:
-                    announce("Zeilenende")
+                    announce(_("Zeilenende"))
                     actLetter=len(line)
 
             elif lastKey == LEFT_ARROW_KEY: 
@@ -269,15 +277,15 @@ def readResult():
                     readNextLetter=True
                     actLetter-=1
                 else:
-                    announce("Zeilenanfang")
+                    announce(_("Zeilenanfang"))
                     actLetter=-1
 
             elif lastKey == ord('z'):
                 readLinenumbers = not readLinenumbers
                 if (readLinenumbers==True):
-                    announce("Zeilennummern werden vorgelesen")
+                    announce(_("Zeilennummern werden vorgelesen"))
                 else:
-                    announce("Zeilennummern werden nicht vorgelesen")
+                    announce(_("Zeilennummern werden nicht vorgelesen"))
 
             elif lastKey == ord('h'):
                 printHelpReadmode()
@@ -285,34 +293,34 @@ def readResult():
 
             if readNextLine==False:
                 if lastKey == BACKSPACE_KEY:
-                    announce ("1 drücken für Zeichen löschen, 2 für Zeile löschen")
+                    announce (_("1 drücken für Zeichen löschen, 2 für Zeile löschen"))
                     option=getOption(2)
                     if option == 1:
                         if (actLetter<1):
                             Lines[actLine] = Lines[actLine][1:]
                         else:
                             Lines[actLine] = Lines[actLine][:actLetter] + Lines[actLine][actLetter+1:]
-                        announce ("Zeichen gelöscht")
+                        announce (_("Zeichen gelöscht"))
                         linesChanged=True
                     if option == 2:
                         Lines=Lines[:actLine]+Lines[actLine+1:]
-                        announce ("Zeile gelöscht")
+                        announce (_("Zeile gelöscht"))
                         linesChanged=True
                     
                 elif lastKey == INSERT_KEY:
-                    announce ("1 drücken für Zeichen einfügen, 2 für Zeile einfügen")
+                    announce (_("1 drücken für Zeichen einfügen, 2 für Zeile einfügen"))
                     option=getOption(2)
                     if (option == 1):
                         Lines[actLine]= Lines[actLine][:actLetter+1] + ' ' + Lines[actLine][actLetter+1:]
-                        announce ("Leerzeichen eingefügt")
+                        announce (_("Leerzeichen eingefügt"))
                         linesChanged=True
                     elif (option == 2):
                         Lines.insert(actLine," ")
-                        announce ("Leere Zeile eingefügt")
+                        announce (_("Leere Zeile eingefügt"))
                         linesChanged=True
                         
                 elif lastKey == DEL_KEY:
-                    announce ("Buchstabe "+expandUnreadableCharacters(letter,True)+" ersetzen")
+                    announce (_("Ersetze Buchstabe ")+expandUnreadableCharacters(letter,True))
                     mode=EDITMODE
                     lastKey=0
 
@@ -323,13 +331,13 @@ def readResult():
                     strlist = list(line)
                     strlist[actLetter] = chr(lastKey)
                     letter=chr(lastKey)
-                    announce ("durch "+expandUnreadableCharacters(chr(lastKey),True)+" ersetzt")
+                    announce (_("Ersetzt durch ")+expandUnreadableCharacters(chr(lastKey),True))
                     line = ''.join(strlist)+'\n'
                     print (line, flush=True)
                     Lines[actLine]=line
                     linesChanged=True
                 else:
-                    announce ("Ersetzen beendet")
+                    announce (_("Ersetzen beendet"))
                 mode=READMODE     
 
         if (lastKey == -1) and (readNextLine == True):   # no key -> progress to next line!
@@ -340,16 +348,16 @@ def readResult():
                 
         if (lastKey == ESCAPE_KEY):
             actLine = len(Lines)
-            announce ("Lesemodus beendet")
+            announce (_("Lesemodus beendet"))
             if linesChanged ==True:
-                announce ("Sollen die Änderungen gespeichert werden?")
+                announce (_("Sollen die Änderungen gespeichert werden?"))
                 if getYesNo()==True:
-                    announce("Ja")
+                    announce(_("ja"))
                     file1 = open(marked_name, 'w', encoding='utf-8', errors='ignore')
                     file1.writelines(Lines)
                     file1.close()
                 else:
-                    announce("Nein")
+                    announce(_("nein"))
             mode=PAGEMODE
       
     cv2.destroyWindow(windowName)
@@ -389,7 +397,7 @@ def process_image (img,x,y,w,h):
 def slice_and_process_image(frame):
     global img_counter
     if frame is None:
-        announce ("Bildaten für Seite {} nicht vorhanden, Verarbeitung nicht möglich".format(img_counter))
+        announce (_("Bildaten für Seite {} nicht vorhanden, Verarbeitung nicht möglich").format(img_counter))
         return
         
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -415,14 +423,14 @@ def slice_and_process_image(frame):
             process_image(frame,x,y,w,h)
                             
         else:   # assume book with landscape orientation, extract 2 pages!
-            announce("Doppelseite erkannt, verarbeite linke Seite")
+            announce(_("Doppelseite erkannt, verarbeite linke Seite"))
             half_w=round(w/2)
             process_image(frame,x,y,half_w,h)
             img_counter += 1
-            announce("verarbeite rechte Seite")
+            announce(_("verarbeite rechte Seite"))
             process_image(frame,x+half_w,y,half_w,h)
     else:
-        announce("keine Seite erkannt"); 
+        announce(_("keine Seite erkannt")); 
 
 def processFolder (importPath):
     global img_counter
@@ -442,7 +450,7 @@ def processFolder (importPath):
 
 def removeResults():
     global img_counter
-    announce("Lösche alle bestehenden Ergebnisdateien.")
+    announce(_("Lösche alle bestehenden Ergebnisdateien."))
     img_counter=1
     files = glob.glob('{}*'.format(results_dir))
     for f in files:
@@ -458,7 +466,7 @@ def getYesNo():
         if k==-1 or k==0 or k==255:
             continue
         else:
-            announce("bitte j für ja oder n für nein drücken")
+            announce(_("bitte j für ja oder n für nein drücken"))
 
 def getOption(max):
     while (True):
@@ -466,12 +474,12 @@ def getOption(max):
         if k>=ord('1') and k<=ord('1')+max:
             return k-ord('1')+1
         if k%256==ESCAPE_KEY:
-            announce("Auswahl abgebrochen")
+            announce(_("Auswahl abgebrochen"))
             return(-1)
         if k==-1 or k==0 or k==255:
             continue
         else:
-            announce("bitte Option mit den Zifferntasten wählen oder Escape zum Abbrechen drücken")
+            announce(_("bitte Option mit den Zifferntasten wählen oder Escape zum Abbrechen drücken"))
 
 
 def resizeImg(image):
@@ -494,41 +502,41 @@ def openCamera():
         if ret:        
         # if cam.read()[0]:
             cv2.imshow("brailleImage", resizeImg(frame))
-            announce ("Kamera Index {} gefunden, Name:{}".format(i,cam.getBackendName()))
-            announce ("diese Kamera verwenden?");
+            announce (_("Kamera Index {} gefunden, Name:{}").format(i,cam.getBackendName()))
+            announce (_("diese Kamera verwenden?"));
             if getYesNo()==True:
-                announce ("ja")
+                announce (_("ja"))
                 fromCam=True
                 break
             else:
-                announce ("nein")
+                announce (_("nein"))
                 cam.release()
         i+=1       
 
 def printHelp():
-    announce("Taste h: Hilfetext Hauptmenü")
-    announce("Taste k: zwischen Kamera und Bilddateien wechseln")
-    announce("Leertaste: Übersetzung der aktuellen Seite starten")
-    announce("Bildtaste rauf: vorige Seite")
-    announce("Bildtaste runter: nächste Seite")
-    announce("Entertaste: zum Lesemodus wechseln")
-    announce("Plustaste: schneller sprechen")
-    announce("Minustaste: langsamer sprechen")
-    announce("Taste l: löschen aller bestehenden Bild- und Ergebnisdateien")
-    announce("Escape: Programm beenden und Textdatei speichern")
+    announce(_("Taste h: Hilfetext Hauptmenü"))
+    announce(_("Taste k: zwischen Kamera und Bilddateien wechseln"))
+    announce(_("Leertaste: Übersetzung der aktuellen Seite starten"))
+    announce(_("Bildtaste rauf: vorige Seite"))
+    announce(_("Bildtaste runter: nächste Seite"))
+    announce(_("Entertaste: zum Lesemodus wechseln"))
+    announce(_("Plustaste: schneller sprechen"))
+    announce(_("Minustaste: langsamer sprechen"))
+    announce(_("Taste l: löschen aller bestehenden Bild- und Ergebnisdateien"))
+    announce(_("Escape: Programm beenden und Textdatei speichern"))
 
 def printHelpReadmode():
-    announce("Taste h: Hilfetext Lesemodus")
-    announce("Pfeiltaste rauf: vorige Zeile")
-    announce("Pfeiltaste runter: nächste Zeile")
-    announce("Pfeiltaste links: voriges Zeichen")
-    announce("Pfeiltaste rechts: nächstes Zeichen")
-    announce("Entfernen: Zeichen ersetzen")
-    announce("Einfügen: Leerzeichen oder leere Zeile einfügen")
-    announce("Backspace: Zeichen oder Zeile löschen")
-    announce("Taste z: Zeilennummern vorlesen oder nicht")
-    announce("Taste p: Pausieren der laufenden Sprachausgabe")
-    announce("Escape: Lesemodus beenden")
+    announce(_("Taste h: Hilfetext Lesemodus"))
+    announce(_("Pfeiltaste rauf: vorige Zeile"))
+    announce(_("Pfeiltaste runter: nächste Zeile"))
+    announce(_("Pfeiltaste links: voriges Zeichen"))
+    announce(_("Pfeiltaste rechts: nächstes Zeichen"))
+    announce(_("Entfernen: Zeichen ersetzen"))
+    announce(_("Einfügen: Leerzeichen oder leere Zeile einfügen"))
+    announce(_("Backspace: Zeichen oder Zeile löschen"))
+    announce(_("Taste z: Zeilennummern vorlesen oder nicht"))
+    announce(_("Taste p: Pausieren der laufenden Sprachausgabe"))
+    announce(_("Escape: Lesemodus beenden"))
 
 
 def selectVoice(engine, language):
@@ -551,6 +559,7 @@ parser = argparse.ArgumentParser(description='Angelina Braille Reader: optical B
 parser.add_argument('input', nargs='?', type=str, help='(optional): Input source to be processed: directory name or "camera". If not specified, existing files in results folder will be used')
 #parser.add_argument('results_dir', type=str, help='Output directory for results.')
 parser.add_argument('-l', '--lang', type=str, default='DE', help='Document language (RU, EN, DE, GR, LV, PL, UZ or UZL). If not specified, default is DE')
+parser.add_argument('-u', '--UIlang', type=str, default='DE', help='User interface language (EN, DE). If not specified, default is DE')
 parser.add_argument('-o', '--orient', action='store_false', help="Don't find orientation, use original file orientation (faster)")
 parser.add_argument('-s', '--silent', action='store_true', help="silent mode, do not generate speech output")
 #parser.add_argument('-2', dest='two', action='store_true', help="Process 2 sides")
@@ -561,10 +570,17 @@ if not Path(results_dir).exists():
     print('results directory does not exist: ' + results_dir)
     exit()
 
-# Initialize the speech synthesizer and other OS-dependent resources
+
+# set active locale
+if args.UIlang.lower() in supported_langs:
+    translations[args.UIlang.lower()].install(names=['gettext', 'ngettext'])
+else:
+    translations['de'].install(names=['gettext', 'ngettext'])
+
+# Initialize the speech synthesizer and try to selet voice for locale
 if onWindows==True:
     speechSynthesizer = pyttsx3.init()
-    selectVoice(speechSynthesizer, args.lang) 
+    selectVoice(speechSynthesizer, args.UIlang) 
     voiceSpeed=200
     #speechSynthesizer.setProperty('volume', 0.7)
 else:
@@ -573,7 +589,7 @@ else:
 mixer.init()
 
 # welcome message
-announce("Programm startet ...")
+announce(_("Programm startet ..."))
 
 # Initialize the webcam and opencv, create live window
 cv2.namedWindow("brailleImage", cv2.WINDOW_AUTOSIZE)
@@ -589,12 +605,12 @@ if args.input:
     if (args.input=='camera'):
         openCamera()
     else:
-        announce("Verarbeite Dateien aus Verzeichnis "+args.input)
+        announce(_("Verarbeite Dateien aus Verzeichnis ")+args.input)
         processFolder(args.input)
-        announce("Verarbeitung abgeschlossen")
+        announce(_("Verarbeitung abgeschlossen"))
         img_counter=1
 
-announce ("Bereit. Taste h für Hilfe drücken.");
+announce (_("Bereit. Taste h für Hilfe drücken."));
 updateImage = True
 
 # main loop
@@ -607,14 +623,14 @@ while True:
                 openCamera()
             ret, frame = cam.read()
             if not ret:
-                announce("Kamera konnte Seite {} nicht aufnehmen.".format(img_counter))
+                announce(_("Kamera konnte Seite {} nicht aufnehmen.").format(img_counter))
                 # fromCam=False
                 updateImage=False
         elif (os.path.exists(actfile)==True):
             frame = cv2.imread(actfile)
             updateImage=False
         else:
-            announce("Datei für Seite {} nicht vorhanden".format(img_counter))
+            announce(_("Datei für Seite {} nicht vorhanden").format(img_counter))
             updateImage=False
             continue
 
@@ -623,7 +639,7 @@ while True:
 
     k = cv2.waitKeyEx(10)
     if k%256 == ESCAPE_KEY:       # ESC pressed
-        announce("Programm wird beendet.")
+        announce(_("Programm wird beendet."))
         exportResults()
         break
 
@@ -633,9 +649,9 @@ while True:
     elif k%256 == ord('k'):    # k pressed
         fromCam = not fromCam
         if fromCam==True:
-            announce("Kamera eingeschaltet - verwende Kamerabild")
+            announce(_("Kamera eingeschaltet - verwende Kamerabild"))
         else:
-            announce("Kamera ausgeschaltet - verwende bestehende Ergebnisdateien")
+            announce(_("Kamera ausgeschaltet - verwende bestehende Ergebnisdateien"))
         updateImage=True
 
     elif k%256 == ord('h'):    # h pressed
@@ -643,27 +659,27 @@ while True:
         
     elif k%256 == ord('-'):    # - pressed
         voiceSpeed -= 10
-        announce("Sprechgeschwindigkeit {} Prozent".format(voiceSpeed))
+        announce(_("Sprechgeschwindigkeit {} Prozent").format(voiceSpeed))
 
     elif k%256 == ord('+'):    # + pressed
         voiceSpeed += 10
-        announce("Sprechgeschwindigkeit {} Prozent".format(voiceSpeed))
+        announce(_("Sprechgeschwindigkeit {} Prozent").format(voiceSpeed))
             
     elif k == PAGEUP_KEY:        # previous page
         updateImage=True
         if (img_counter>1):
             img_counter-=1
-            announce("Seite {}".format(img_counter))
+            announce(_("Seite {}").format(img_counter))
         else:
-            announce("Bereits auf Seite eins")
+            announce(_("Bereits auf Seite eins"))
 
     elif k == PAGEDOWN_KEY:          # next page
         updateImage=True
         img_counter+=1
-        announce("Seite {}".format(img_counter))
+        announce(_("Seite {}").format(img_counter))
 
     elif k == UP_ARROW_KEY or k == DOWN_ARROW_KEY or k == RIGHT_ARROW_KEY or k == LEFT_ARROW_KEY:     # up or down arrow pressed
-        announce("Zum Wechseln in den Vorlesemodus Entertaste drücken")
+        announce(_("Zum Wechseln in den Lesemodus Entertaste drücken"))
 
     elif k%256 == ENTER_KEY:    # ENTER pressed
         readResult()            
@@ -671,16 +687,16 @@ while True:
     elif k%256 == ord(' '):     # SPACE pressed
         updateImage=True
         if fromCam==True:
-            announce("verarbeite Seite {} von Kamera".format(img_counter))
+            announce(_("verarbeite Seite {} von Kamera").format(img_counter))
         else:
-            announce("verarbeite Seite {} aus bestehender Datei".format(img_counter))
+            announce(_("verarbeite Seite {} aus bestehender Datei").format(img_counter))
         slice_and_process_image(frame)
-        announce("Verarbeitung abgeschlossen")
+        announce(_("Verarbeitung abgeschlossen"))
 
     elif k==-1:  # normally -1 returned,so don't print it
         continue
     else:
-        print ("Tastencode {} nicht verwendet".format(k)) # else print key value
+        print (_("Tastencode {} nicht verwendet").format(k)) # else print key value
         
 if (cam != None):
     cam.release()
