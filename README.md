@@ -67,6 +67,8 @@ If the webservice is used, a client requires a standard web-browser (Chrome, Fir
 
 ## Installation
 
+### 1. Install Angelina Braille Reader
+
 ```
 sudo apt-get install libttspico-utils sox 
 git clone --recursive https://github.com/IlyaOvodov/AngelinaReader.git
@@ -81,9 +83,27 @@ python run_local_camInteractive.py
 Windows: pip directory (i.e. `<python>\Scripts`) should be added to Path .   
 Be sure  `python` and `pip` start Python3 if both Python 3 and Python 2.7 are installed.   
 
+
+### 2. Download neural net model
+```
+wget -O weights/model.t7 http://ovdv.ru/files/retina_chars_eced60.clr.008
+```
+In case wget throws an 'unsupported protocol error': either update wget to a version with SSL support, or download the file manually from https://ovdv.ru/files/retina_chars_eced60.clr.008 and save/rename it to `weights/model.t7`
+Note that the web solution uses the most actual neural net model while the model for standalone installation available here is not always up to date.
+
+
+### 3. Install Liblouis library
+
+Download and install [Liblouis](https://liblouis.io/):
+- download and unpack [Liblouis (source)](https://liblouis.io/downloads/)
+- install Liblouis [as described](https://github.com/liblouis/liblouis#installation) for Linux or as described [here](https://raw.githubusercontent.com/liblouis/liblouis/master/README.windows) for Windows
+- install Python bindings for Liblouis as described [here](https://github.com/liblouis/liblouis/tree/master/python)
+
+For Windows: update `liblouis_tables_path_prefix` parameter in `AngelinaReader\local_config.py` file with path to Liblouis tables, including trailing "/" 
+
 ### Installation of python CUDA support on NVIDIA Jetson Nano (experimental)
 
-On an Ubuntu 18.x on a NVIDIA Jetson:
+On an Ubuntu 18.x on a NVIDIA Jetson Nano board:
 * use pytorch-1.10 and torchvision-0.11 from https://qengineering.eu/install-pytorch-on-jetson-nano.html
 * use numpy and other wheels from https://github.com/jetson-nano-wheels/jetson-nano-wheels
 * for pygame installation use https://forums.developer.nvidia.com/t/install-pygame-on-jetson-nano/83731/8
