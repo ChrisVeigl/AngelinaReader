@@ -61,6 +61,8 @@ if os.name=='nt':
     PAGEDOWN_KEY = 2228224
     DEL_KEY = 3014656
     INSERT_KEY = 2949120
+    RIGHTSHIFT_KEY = 65505  # TBD
+    LEFTSHIFT_KEY = 65506   # TBD
     
 else:
     onWindows=False
@@ -70,10 +72,12 @@ else:
     DOWN_ARROW_KEY = 65364
     LEFT_ARROW_KEY = 65361
     RIGHT_ARROW_KEY = 65363
-    PAGEUP_KEY = 65366
-    PAGEDOWN_KEY = 65365
-    DEL_KEY = 3014656     #TBD
-    INSERT_KEY = 2949120  #TBD
+    PAGEUP_KEY = 65365
+    PAGEDOWN_KEY = 65366
+    DEL_KEY = 65535
+    INSERT_KEY = 65379
+    RIGHTSHIFT_KEY = 65505
+    LEFTSHIFT_KEY = 65506
 
 
 # file paths and filename prefixes
@@ -326,7 +330,7 @@ def readResult():
 
         if mode==EDITMODE:
             lastKey = cv2.waitKeyEx(10)
-            if (lastKey>0):  
+            if (lastKey>0) and (lastKey!=LEFTSHIFT_KEY) and (lastKey!=RIGHTSHIFT_KEY):  
                 if (lastKey<0x110000):
                     strlist = list(line)
                     strlist[actLetter] = chr(lastKey)
