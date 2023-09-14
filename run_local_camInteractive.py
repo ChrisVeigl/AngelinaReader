@@ -163,7 +163,7 @@ def announce (text):
 
 def expandUnreadableCharacters(line,expandSpaceKey):
     if (expandSpaceKey==True):
-        line=line.replace(" ",  _("Leertaste")+" ")
+        line=line.replace(" ",  _("Leertaste")+" ") 
     line=line.replace("(",  " "+_("runde Klammer öffnen")+" ")
     line=line.replace(")",  " "+_("runde Klammer schließen")+" ")
     line=line.replace("~",  " "+_("unbekannt")+" ")
