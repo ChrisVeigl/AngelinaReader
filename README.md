@@ -94,12 +94,10 @@ Note that the web solution uses the most actual neural net model while the model
 
 ### 3. Install Liblouis library
 
-Download and install [Liblouis](https://liblouis.io/):
-- download and unpack [Liblouis (source)](https://liblouis.io/downloads/)
-- install Liblouis [as described](https://github.com/liblouis/liblouis#installation) for Linux or as described [here](https://raw.githubusercontent.com/liblouis/liblouis/master/README.windows) for Windows
-- install Python bindings for Liblouis as described [here](https://github.com/liblouis/liblouis/tree/master/python)
+The [Liblouis](https://liblouis.io/) library is used for translation of Grade-2 braille. Follow the installation instructions:
+- [for Linux](https://github.com/liblouis/liblouis#installation)
+- [for Windows](Liblouis/ReadMe.md)
 
-For Windows: update `liblouis_tables_path_prefix` parameter in `AngelinaReader\local_config.py` file with path to Liblouis tables, including trailing "/" 
 
 ### Installation of python CUDA support on NVIDIA Jetson Nano (experimental)
 
