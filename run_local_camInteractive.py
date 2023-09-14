@@ -163,20 +163,20 @@ def announce (text):
 
 def expandUnreadableCharacters(line,expandSpaceKey):
     if (expandSpaceKey==True):
-        line=line.replace(" ", "Leertaste ")
-    line=line.replace("(", " Klammer auf ")
-    line=line.replace(")", " Klammer zu ")
-    line=line.replace("~", " unbekannt ")
-    line=line.replace("\"", " Hochkomma ")
-    line=line.replace(":", " Doppelpunkt ")
-    line=line.replace(";", " Strichpunkt ")
-    line=line.replace(",", " Beistrich ")
-    line=line.replace(".", " Punkt ")
-    line=line.replace("-", " Minus ")
-    line=line.replace("+", " Plus ")
-    line=line.replace("*", " Stern ")
-    line=line.replace("!", " Rufzeichen ")
-    line=line.replace("?", " Fragezeichen ")
+        line=line.replace(" ",  _("Leertaste")+" ")
+    line=line.replace("(",  " "+_("runde Klammer öffnen")+" ")
+    line=line.replace(")",  " "+_("runde Klammer schließen")+" ")
+    line=line.replace("~",  " "+_("unbekannt")+" ")
+    line=line.replace("\"", " "+_("Hochkomma")+" ")
+    line=line.replace(":",  " "+_("Doppelpunkt")+" ")
+    line=line.replace(";",  " "+_("Strichpunkt")+" ")
+    line=line.replace(",",  " "+_("Beistrich")+" ")
+    line=line.replace(".",  " "+_("Punkt")+" ")
+    line=line.replace("-",  " "+_("Minus")+" ")
+    line=line.replace("+",  " "+_("Plus")+" ")
+    line=line.replace("*",  " "+_("Stern")+" ")
+    line=line.replace("!",  " "+_("Rufzeichen")+" ")
+    line=line.replace("?",  " "+_("Fragezeichen")+" ")
     return(line)
 
 def exportResults():
@@ -268,12 +268,12 @@ def readResult():
 
             elif lastKey == RIGHT_ARROW_KEY:
                 readNextLine=False
-                if (actLetter<len(line)-1):
+                if (actLetter<len(line)-2):
                     readNextLetter=True
                     actLetter+=1
                 else:
                     announce(_("Zeilenende"))
-                    actLetter=len(line)
+                    #actLetter=len(line)
 
             elif lastKey == LEFT_ARROW_KEY: 
                 readNextLine=False
@@ -282,7 +282,7 @@ def readResult():
                     actLetter-=1
                 else:
                     announce(_("Zeilenanfang"))
-                    actLetter=-1
+                    #actLetter=-1
 
             elif lastKey == ord('z'):
                 readLinenumbers = not readLinenumbers
@@ -336,8 +336,8 @@ def readResult():
                     strlist[actLetter] = chr(lastKey)
                     letter=chr(lastKey)
                     announce (_("Ersetzt durch ")+expandUnreadableCharacters(chr(lastKey),True))
-                    line = ''.join(strlist)+'\n'
-                    print (line, flush=True)
+                    line = ''.join(strlist)
+                    # print (line, flush=True)
                     Lines[actLine]=line
                     linesChanged=True
                 else:
