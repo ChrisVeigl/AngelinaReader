@@ -1,14 +1,14 @@
-# English translations for OBR-Reader.
-# Copyright (C) 2023 AsTeRICS-Foundation
-# This file is distributed under the same license as the OBR-Reader project.
+# English translations for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OBR-Reader 1\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-09-11 14:06+0200\n"
-"PO-Revision-Date: 2023-09-11 14:06+0200\n"
+"POT-Creation-Date: 2023-09-15 01:45+0200\n"
+"PO-Revision-Date: 2023-09-15 01:46+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
@@ -18,283 +18,339 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
 
-#: ../run_local_camInteractive.py:112
+#: run_local_camInteractive.py:116
 msgid "leere Zeile"
 msgstr "empty line"
 
-#: ../run_local_camInteractive.py:144
+#: run_local_camInteractive.py:148
 msgid "Could not play music file (maybe empty)!"
 msgstr "Could not play music file (maybe empty)!"
 
-#: ../run_local_camInteractive.py:203
+#: run_local_camInteractive.py:166
+msgid "Leertaste"
+msgstr "space bar"
+
+#: run_local_camInteractive.py:167
+msgid "runde Klammer öffnen"
+msgstr "open round bracket"
+
+#: run_local_camInteractive.py:168
+msgid "runde Klammer schließen"
+msgstr “close round bracket”
+
+#: run_local_camInteractive.py:169
+msgid "unbekannt"
+msgstr "unknown"
+
+#: run_local_camInteractive.py:170
+msgid "Hochkomma"
+msgstr "quote"
+
+#: run_local_camInteractive.py:171
+msgid "Doppelpunkt"
+msgstr "colon"
+
+#: run_local_camInteractive.py:172
+msgid "Strichpunkt"
+msgstr "semicolon"
+
+#: run_local_camInteractive.py:173
+msgid "Beistrich"
+msgstr "comma"
+
+#: run_local_camInteractive.py:174
+msgid "Punkt"
+msgstr "Point"
+
+#: run_local_camInteractive.py:175
+msgid "Minus"
+msgstr "Minus"
+
+#: run_local_camInteractive.py:176
+msgid "Plus"
+msgstr "Plus"
+
+#: run_local_camInteractive.py:177
+msgid "Stern"
+msgstr "Stern"
+
+#: run_local_camInteractive.py:178
+msgid "Rufzeichen"
+msgstr "call sign"
+
+#: run_local_camInteractive.py:179
+msgid "Fragezeichen"
+msgstr "Question mark"
+
+#: run_local_camInteractive.py:207
 msgid "Lesen und Editieren Seite {}"
 msgstr "Read and edit page {}"
 
-#: ../run_local_camInteractive.py:209
+#: run_local_camInteractive.py:213
 msgid "Ergebnisdateien für diese Seite nicht vorhanden, bitte zuerst Bild verarbeiten"
 msgstr "Result files for this page do not exist, please process image first"
 
-#: ../run_local_camInteractive.py:216
+#: run_local_camInteractive.py:220
 msgid "es konnten keine Ergebnisse für diese Seite gefunden werden"
 msgstr "no results could be found for this page"
 
-#: ../run_local_camInteractive.py:243
+#: run_local_camInteractive.py:247
 msgid "Zeile{}: {}"
 msgstr "Line{}: {}"
 
-#: ../run_local_camInteractive.py:271
+#: run_local_camInteractive.py:275
 msgid "Zeilenende"
 msgstr "end of line"
 
-#: ../run_local_camInteractive.py:280
+#: run_local_camInteractive.py:284
 msgid "Zeilenanfang"
 msgstr "Start of line"
 
-#: ../run_local_camInteractive.py:286
+#: run_local_camInteractive.py:290
 msgid "Zeilennummern werden vorgelesen"
 msgstr "Line numbers are read out"
 
-#: ../run_local_camInteractive.py:288
+#: run_local_camInteractive.py:292
 msgid "Zeilennummern werden nicht vorgelesen"
 msgstr "Line numbers are not read out"
 
-#: ../run_local_camInteractive.py:296
+#: run_local_camInteractive.py:300
 msgid "1 drücken für Zeichen löschen, 2 für Zeile löschen"
 msgstr "Press 1 to delete characters, 2 to delete lines"
 
-#: ../run_local_camInteractive.py:303
+#: run_local_camInteractive.py:307
 msgid "Zeichen gelöscht"
-msgstr "character deleted"
+msgstr "Character deleted"
 
-#: ../run_local_camInteractive.py:307
+#: run_local_camInteractive.py:311
 msgid "Zeile gelöscht"
 msgstr "Line deleted"
 
-#: ../run_local_camInteractive.py:311
+#: run_local_camInteractive.py:315
 msgid "1 drücken für Zeichen einfügen, 2 für Zeile einfügen"
 msgstr "Press 1 to insert character, 2 to insert line"
 
-#: ../run_local_camInteractive.py:315
+#: run_local_camInteractive.py:319
 msgid "Leerzeichen eingefügt"
 msgstr "space inserted"
 
-#: ../run_local_camInteractive.py:319
+#: run_local_camInteractive.py:323
 msgid "Leere Zeile eingefügt"
 msgstr "Blank line inserted"
 
-#: ../run_local_camInteractive.py:323
+#: run_local_camInteractive.py:327
 msgid "Ersetze Buchstabe "
-msgstr "Replace letter"
+msgstr "Replace letter "
 
-#: ../run_local_camInteractive.py:334
+#: run_local_camInteractive.py:338
 msgid "Ersetzt durch "
 msgstr "Replaced by "
 
-#: ../run_local_camInteractive.py:340
+#: run_local_camInteractive.py:344
 msgid "Ersetzen beendet"
 msgstr "Replace complete"
 
-#: ../run_local_camInteractive.py:351
+#: run_local_camInteractive.py:355
 msgid "Lesemodus beendet"
 msgstr "Reading mode ended"
 
-#: ../run_local_camInteractive.py:353
+#: run_local_camInteractive.py:357
 msgid "Sollen die Änderungen gespeichert werden?"
-msgstr "Save the changes?"
+msgstr "Should the changes be saved?"
 
-#: ../run_local_camInteractive.py:355 ../run_local_camInteractive.py:508
+#: run_local_camInteractive.py:359 run_local_camInteractive.py:512
 msgid "ja"
-msgstr "and"
+msgstr "yes"
 
-#: ../run_local_camInteractive.py:360 ../run_local_camInteractive.py:512
+#: run_local_camInteractive.py:364 run_local_camInteractive.py:516
 msgid "nein"
 msgstr "no"
 
-#: ../run_local_camInteractive.py:400
+#: run_local_camInteractive.py:404
 msgid "Bildaten für Seite {} nicht vorhanden, Verarbeitung nicht möglich"
-msgstr "Image data for page {} not available, processing not possible"
+msgstr "Image data for page {} does not exist, processing not possible"
 
-#: ../run_local_camInteractive.py:426
+#: run_local_camInteractive.py:430
 msgid "Doppelseite erkannt, verarbeite linke Seite"
-msgstr "Face spread detected, processing left page"
+msgstr "Double page detected, process left side"
 
-#: ../run_local_camInteractive.py:430
+#: run_local_camInteractive.py:434
 msgid "verarbeite rechte Seite"
 msgstr "process right side"
 
-#: ../run_local_camInteractive.py:433
+#: run_local_camInteractive.py:437
 msgid "keine Seite erkannt"
 msgstr "no page recognized"
 
-#: ../run_local_camInteractive.py:453
+#: run_local_camInteractive.py:457
 msgid "Lösche alle bestehenden Ergebnisdateien."
 msgstr "Delete all existing result files."
 
-#: ../run_local_camInteractive.py:469
+#: run_local_camInteractive.py:473
 msgid "bitte j für ja oder n für nein drücken"
 msgstr "please press y for yes or n for no"
 
-#: ../run_local_camInteractive.py:477
+#: run_local_camInteractive.py:481
 msgid "Auswahl abgebrochen"
 msgstr "Selection canceled"
 
-#: ../run_local_camInteractive.py:482
+#: run_local_camInteractive.py:486
 msgid "bitte Option mit den Zifferntasten wählen oder Escape zum Abbrechen drücken"
 msgstr "please select option using number keys or press escape to cancel"
 
-#: ../run_local_camInteractive.py:505
+#: run_local_camInteractive.py:509
 msgid "Kamera Index {} gefunden, Name:{}"
 msgstr "Camera index {} found, name:{}"
 
-#: ../run_local_camInteractive.py:506
+#: run_local_camInteractive.py:510
 msgid "diese Kamera verwenden?"
-msgstr "use this camera?"
+msgstr “use this camera?”
 
-#: ../run_local_camInteractive.py:517
+#: run_local_camInteractive.py:521
 msgid "Taste h: Hilfetext Hauptmenü"
 msgstr "H key: help text main menu"
 
-#: ../run_local_camInteractive.py:518
+#: run_local_camInteractive.py:522
 msgid "Taste k: zwischen Kamera und Bilddateien wechseln"
 msgstr "K key: switch between camera and image files"
 
-#: ../run_local_camInteractive.py:519
+#: run_local_camInteractive.py:523
 msgid "Leertaste: Übersetzung der aktuellen Seite starten"
 msgstr "Spacebar: Start translation of the current page"
 
-#: ../run_local_camInteractive.py:520
+#: run_local_camInteractive.py:524
 msgid "Bildtaste rauf: vorige Seite"
-msgstr "Page Up: Previous Page"
+msgstr "Page key up: previous page"
 
-#: ../run_local_camInteractive.py:521
+#: run_local_camInteractive.py:525
 msgid "Bildtaste runter: nächste Seite"
 msgstr "Page key down: next page"
 
-#: ../run_local_camInteractive.py:522
+#: run_local_camInteractive.py:526
 msgid "Entertaste: zum Lesemodus wechseln"
 msgstr "Enter key: switch to reading mode"
 
-#: ../run_local_camInteractive.py:523
+#: run_local_camInteractive.py:527
 msgid "Plustaste: schneller sprechen"
 msgstr "Plus button: speak faster"
 
-#: ../run_local_camInteractive.py:524
+#: run_local_camInteractive.py:528
 msgid "Minustaste: langsamer sprechen"
 msgstr "Minus key: speak more slowly"
 
-#: ../run_local_camInteractive.py:525
+#: run_local_camInteractive.py:529
 msgid "Taste l: löschen aller bestehenden Bild- und Ergebnisdateien"
 msgstr "Key l: delete all existing image and result files"
 
-#: ../run_local_camInteractive.py:526
+#: run_local_camInteractive.py:530
 msgid "Escape: Programm beenden und Textdatei speichern"
 msgstr "Escape: exit program and save text file"
 
-#: ../run_local_camInteractive.py:529
+#: run_local_camInteractive.py:533
 msgid "Taste h: Hilfetext Lesemodus"
 msgstr "H key: Help text reading mode"
 
-#: ../run_local_camInteractive.py:530
+#: run_local_camInteractive.py:534
 msgid "Pfeiltaste rauf: vorige Zeile"
-msgstr "Up arrow: previous line"
+msgstr "Up arrow key: previous line"
 
-#: ../run_local_camInteractive.py:531
+#: run_local_camInteractive.py:535
 msgid "Pfeiltaste runter: nächste Zeile"
 msgstr "Down arrow key: next line"
 
-#: ../run_local_camInteractive.py:532
+#: run_local_camInteractive.py:536
 msgid "Pfeiltaste links: voriges Zeichen"
 msgstr "Left arrow key: previous character"
 
-#: ../run_local_camInteractive.py:533
+#: run_local_camInteractive.py:537
 msgid "Pfeiltaste rechts: nächstes Zeichen"
 msgstr "Right arrow key: next character"
 
-#: ../run_local_camInteractive.py:534
+#: run_local_camInteractive.py:538
 msgid "Entfernen: Zeichen ersetzen"
 msgstr "Remove: Replace characters"
 
-#: ../run_local_camInteractive.py:535
+#: run_local_camInteractive.py:539
 msgid "Einfügen: Leerzeichen oder leere Zeile einfügen"
-msgstr "Insert: insert space or empty line"
+msgstr "Insert: Insert space or empty line"
 
-#: ../run_local_camInteractive.py:536
+#: run_local_camInteractive.py:540
 msgid "Backspace: Zeichen oder Zeile löschen"
 msgstr "Backspace: Delete character or line"
 
-#: ../run_local_camInteractive.py:537
+#: run_local_camInteractive.py:541
 msgid "Taste z: Zeilennummern vorlesen oder nicht"
 msgstr "Z key: read out line numbers or not"
 
-#: ../run_local_camInteractive.py:538
+#: run_local_camInteractive.py:542
 msgid "Taste p: Pausieren der laufenden Sprachausgabe"
 msgstr "P key: Pause the current speech output"
 
-#: ../run_local_camInteractive.py:539
+#: run_local_camInteractive.py:543
 msgid "Escape: Lesemodus beenden"
 msgstr "Escape: exit reading mode"
 
-#: ../run_local_camInteractive.py:592
+#: run_local_camInteractive.py:596
 msgid "Programm startet ..."
 msgstr "Program starts..."
 
-#: ../run_local_camInteractive.py:608
+#: run_local_camInteractive.py:612
 msgid "Verarbeite Dateien aus Verzeichnis "
 msgstr "Process files from directory"
 
-#: ../run_local_camInteractive.py:610 ../run_local_camInteractive.py:694
+#: run_local_camInteractive.py:614 run_local_camInteractive.py:698
 msgid "Verarbeitung abgeschlossen"
 msgstr "Processing completed"
 
-#: ../run_local_camInteractive.py:613
+#: run_local_camInteractive.py:617
 msgid "Bereit. Taste h für Hilfe drücken."
 msgstr "Ready. Press h for help."
 
-#: ../run_local_camInteractive.py:626
+#: run_local_camInteractive.py:630
 msgid "Kamera konnte Seite {} nicht aufnehmen."
 msgstr "Camera failed to capture page {}."
 
-#: ../run_local_camInteractive.py:633
+#: run_local_camInteractive.py:637
 msgid "Datei für Seite {} nicht vorhanden"
 msgstr "File for page {} does not exist"
 
-#: ../run_local_camInteractive.py:642
+#: run_local_camInteractive.py:646
 msgid "Programm wird beendet."
-msgstr "Program will end."
+msgstr "Program is ending."
 
-#: ../run_local_camInteractive.py:652
+#: run_local_camInteractive.py:656
 msgid "Kamera eingeschaltet - verwende Kamerabild"
 msgstr "Camera on - use camera image"
 
-#: ../run_local_camInteractive.py:654
+#: run_local_camInteractive.py:658
 msgid "Kamera ausgeschaltet - verwende bestehende Ergebnisdateien"
 msgstr "Camera turned off - use existing result files"
 
-#: ../run_local_camInteractive.py:662 ../run_local_camInteractive.py:666
+#: run_local_camInteractive.py:666 run_local_camInteractive.py:670
 msgid "Sprechgeschwindigkeit {} Prozent"
 msgstr "Speech rate {} percent"
 
-#: ../run_local_camInteractive.py:672 ../run_local_camInteractive.py:679
+#: run_local_camInteractive.py:676 run_local_camInteractive.py:683
 msgid "Seite {}"
 msgstr "Page {}"
 
-#: ../run_local_camInteractive.py:674
+#: run_local_camInteractive.py:678
 msgid "Bereits auf Seite eins"
 msgstr "Already on page one"
 
-#: ../run_local_camInteractive.py:682
+#: run_local_camInteractive.py:686
 msgid "Zum Wechseln in den Lesemodus Entertaste drücken"
 msgstr "Press Enter to switch to reading mode"
 
-#: ../run_local_camInteractive.py:690
+#: run_local_camInteractive.py:694
 msgid "verarbeite Seite {} von Kamera"
-msgstr "processing side {} of camera"
+msgstr "process page {} from camera"
 
-#: ../run_local_camInteractive.py:692
+#: run_local_camInteractive.py:696
 msgid "verarbeite Seite {} aus bestehender Datei"
-msgstr "processing page {} from existing file"
+msgstr "process page {} from existing file"
 
-#: ../run_local_camInteractive.py:699
+#: run_local_camInteractive.py:703
 msgid "Tastencode {} nicht verwendet"
 msgstr "Key code {} not used"
 

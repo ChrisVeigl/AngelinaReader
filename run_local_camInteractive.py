@@ -463,7 +463,7 @@ def removeResults():
 def getYesNo():
     while (True):
         k=cv2.waitKey(10)
-        if k==ord('j'):
+        if k==ord('j') or k==ord('y'):
             return True
         if k==ord('n'):
             return False

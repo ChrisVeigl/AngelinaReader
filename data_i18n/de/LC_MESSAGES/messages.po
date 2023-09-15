@@ -1,14 +1,14 @@
-# German translations for OBR-Reader.
-# Copyright (C) 2023 AsTeRICS-Foundation
-# This file is distributed under the same license as the OBR-Reader project.
+# German translations for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OBR-Reader 1\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-09-11 14:06+0200\n"
-"PO-Revision-Date: 2023-09-11 14:06+0200\n"
+"POT-Creation-Date: 2023-09-15 01:45+0200\n"
+"PO-Revision-Date: 2023-09-15 01:46+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
 "Language-Team: de <LL@li.org>\n"
@@ -18,283 +18,339 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
 
-#: ../run_local_camInteractive.py:112
+#: run_local_camInteractive.py:116
 msgid "leere Zeile"
 msgstr ""
 
-#: ../run_local_camInteractive.py:144
+#: run_local_camInteractive.py:148
 msgid "Could not play music file (maybe empty)!"
 msgstr ""
 
-#: ../run_local_camInteractive.py:203
+#: run_local_camInteractive.py:166
+msgid "Leertaste"
+msgstr ""
+
+#: run_local_camInteractive.py:167
+msgid "runde Klammer öffnen"
+msgstr ""
+
+#: run_local_camInteractive.py:168
+msgid "runde Klammer schließen"
+msgstr ""
+
+#: run_local_camInteractive.py:169
+msgid "unbekannt"
+msgstr ""
+
+#: run_local_camInteractive.py:170
+msgid "Hochkomma"
+msgstr ""
+
+#: run_local_camInteractive.py:171
+msgid "Doppelpunkt"
+msgstr ""
+
+#: run_local_camInteractive.py:172
+msgid "Strichpunkt"
+msgstr ""
+
+#: run_local_camInteractive.py:173
+msgid "Beistrich"
+msgstr ""
+
+#: run_local_camInteractive.py:174
+msgid "Punkt"
+msgstr ""
+
+#: run_local_camInteractive.py:175
+msgid "Minus"
+msgstr ""
+
+#: run_local_camInteractive.py:176
+msgid "Plus"
+msgstr ""
+
+#: run_local_camInteractive.py:177
+msgid "Stern"
+msgstr ""
+
+#: run_local_camInteractive.py:178
+msgid "Rufzeichen"
+msgstr ""
+
+#: run_local_camInteractive.py:179
+msgid "Fragezeichen"
+msgstr ""
+
+#: run_local_camInteractive.py:207
 msgid "Lesen und Editieren Seite {}"
 msgstr ""
 
-#: ../run_local_camInteractive.py:209
+#: run_local_camInteractive.py:213
 msgid "Ergebnisdateien für diese Seite nicht vorhanden, bitte zuerst Bild verarbeiten"
 msgstr ""
 
-#: ../run_local_camInteractive.py:216
+#: run_local_camInteractive.py:220
 msgid "es konnten keine Ergebnisse für diese Seite gefunden werden"
 msgstr ""
 
-#: ../run_local_camInteractive.py:243
+#: run_local_camInteractive.py:247
 msgid "Zeile{}: {}"
 msgstr ""
 
-#: ../run_local_camInteractive.py:271
+#: run_local_camInteractive.py:275
 msgid "Zeilenende"
 msgstr ""
 
-#: ../run_local_camInteractive.py:280
+#: run_local_camInteractive.py:284
 msgid "Zeilenanfang"
 msgstr ""
 
-#: ../run_local_camInteractive.py:286
+#: run_local_camInteractive.py:290
 msgid "Zeilennummern werden vorgelesen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:288
+#: run_local_camInteractive.py:292
 msgid "Zeilennummern werden nicht vorgelesen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:296
+#: run_local_camInteractive.py:300
 msgid "1 drücken für Zeichen löschen, 2 für Zeile löschen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:303
+#: run_local_camInteractive.py:307
 msgid "Zeichen gelöscht"
 msgstr ""
 
-#: ../run_local_camInteractive.py:307
+#: run_local_camInteractive.py:311
 msgid "Zeile gelöscht"
 msgstr ""
 
-#: ../run_local_camInteractive.py:311
+#: run_local_camInteractive.py:315
 msgid "1 drücken für Zeichen einfügen, 2 für Zeile einfügen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:315
+#: run_local_camInteractive.py:319
 msgid "Leerzeichen eingefügt"
 msgstr ""
 
-#: ../run_local_camInteractive.py:319
+#: run_local_camInteractive.py:323
 msgid "Leere Zeile eingefügt"
 msgstr ""
 
-#: ../run_local_camInteractive.py:323
+#: run_local_camInteractive.py:327
 msgid "Ersetze Buchstabe "
 msgstr ""
 
-#: ../run_local_camInteractive.py:334
+#: run_local_camInteractive.py:338
 msgid "Ersetzt durch "
 msgstr ""
 
-#: ../run_local_camInteractive.py:340
+#: run_local_camInteractive.py:344
 msgid "Ersetzen beendet"
 msgstr ""
 
-#: ../run_local_camInteractive.py:351
+#: run_local_camInteractive.py:355
 msgid "Lesemodus beendet"
 msgstr ""
 
-#: ../run_local_camInteractive.py:353
+#: run_local_camInteractive.py:357
 msgid "Sollen die Änderungen gespeichert werden?"
 msgstr ""
 
-#: ../run_local_camInteractive.py:355 ../run_local_camInteractive.py:508
+#: run_local_camInteractive.py:359 run_local_camInteractive.py:512
 msgid "ja"
 msgstr ""
 
-#: ../run_local_camInteractive.py:360 ../run_local_camInteractive.py:512
+#: run_local_camInteractive.py:364 run_local_camInteractive.py:516
 msgid "nein"
 msgstr ""
 
-#: ../run_local_camInteractive.py:400
+#: run_local_camInteractive.py:404
 msgid "Bildaten für Seite {} nicht vorhanden, Verarbeitung nicht möglich"
 msgstr ""
 
-#: ../run_local_camInteractive.py:426
+#: run_local_camInteractive.py:430
 msgid "Doppelseite erkannt, verarbeite linke Seite"
 msgstr ""
 
-#: ../run_local_camInteractive.py:430
+#: run_local_camInteractive.py:434
 msgid "verarbeite rechte Seite"
 msgstr ""
 
-#: ../run_local_camInteractive.py:433
+#: run_local_camInteractive.py:437
 msgid "keine Seite erkannt"
 msgstr ""
 
-#: ../run_local_camInteractive.py:453
+#: run_local_camInteractive.py:457
 msgid "Lösche alle bestehenden Ergebnisdateien."
 msgstr ""
 
-#: ../run_local_camInteractive.py:469
+#: run_local_camInteractive.py:473
 msgid "bitte j für ja oder n für nein drücken"
 msgstr ""
 
-#: ../run_local_camInteractive.py:477
+#: run_local_camInteractive.py:481
 msgid "Auswahl abgebrochen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:482
+#: run_local_camInteractive.py:486
 msgid "bitte Option mit den Zifferntasten wählen oder Escape zum Abbrechen drücken"
 msgstr ""
 
-#: ../run_local_camInteractive.py:505
+#: run_local_camInteractive.py:509
 msgid "Kamera Index {} gefunden, Name:{}"
 msgstr ""
 
-#: ../run_local_camInteractive.py:506
+#: run_local_camInteractive.py:510
 msgid "diese Kamera verwenden?"
 msgstr ""
 
-#: ../run_local_camInteractive.py:517
+#: run_local_camInteractive.py:521
 msgid "Taste h: Hilfetext Hauptmenü"
 msgstr ""
 
-#: ../run_local_camInteractive.py:518
+#: run_local_camInteractive.py:522
 msgid "Taste k: zwischen Kamera und Bilddateien wechseln"
 msgstr ""
 
-#: ../run_local_camInteractive.py:519
+#: run_local_camInteractive.py:523
 msgid "Leertaste: Übersetzung der aktuellen Seite starten"
 msgstr ""
 
-#: ../run_local_camInteractive.py:520
+#: run_local_camInteractive.py:524
 msgid "Bildtaste rauf: vorige Seite"
 msgstr ""
 
-#: ../run_local_camInteractive.py:521
+#: run_local_camInteractive.py:525
 msgid "Bildtaste runter: nächste Seite"
 msgstr ""
 
-#: ../run_local_camInteractive.py:522
+#: run_local_camInteractive.py:526
 msgid "Entertaste: zum Lesemodus wechseln"
 msgstr ""
 
-#: ../run_local_camInteractive.py:523
+#: run_local_camInteractive.py:527
 msgid "Plustaste: schneller sprechen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:524
+#: run_local_camInteractive.py:528
 msgid "Minustaste: langsamer sprechen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:525
+#: run_local_camInteractive.py:529
 msgid "Taste l: löschen aller bestehenden Bild- und Ergebnisdateien"
 msgstr ""
 
-#: ../run_local_camInteractive.py:526
+#: run_local_camInteractive.py:530
 msgid "Escape: Programm beenden und Textdatei speichern"
 msgstr ""
 
-#: ../run_local_camInteractive.py:529
+#: run_local_camInteractive.py:533
 msgid "Taste h: Hilfetext Lesemodus"
 msgstr ""
 
-#: ../run_local_camInteractive.py:530
+#: run_local_camInteractive.py:534
 msgid "Pfeiltaste rauf: vorige Zeile"
 msgstr ""
 
-#: ../run_local_camInteractive.py:531
+#: run_local_camInteractive.py:535
 msgid "Pfeiltaste runter: nächste Zeile"
 msgstr ""
 
-#: ../run_local_camInteractive.py:532
+#: run_local_camInteractive.py:536
 msgid "Pfeiltaste links: voriges Zeichen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:533
+#: run_local_camInteractive.py:537
 msgid "Pfeiltaste rechts: nächstes Zeichen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:534
+#: run_local_camInteractive.py:538
 msgid "Entfernen: Zeichen ersetzen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:535
+#: run_local_camInteractive.py:539
 msgid "Einfügen: Leerzeichen oder leere Zeile einfügen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:536
+#: run_local_camInteractive.py:540
 msgid "Backspace: Zeichen oder Zeile löschen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:537
+#: run_local_camInteractive.py:541
 msgid "Taste z: Zeilennummern vorlesen oder nicht"
 msgstr ""
 
-#: ../run_local_camInteractive.py:538
+#: run_local_camInteractive.py:542
 msgid "Taste p: Pausieren der laufenden Sprachausgabe"
 msgstr ""
 
-#: ../run_local_camInteractive.py:539
+#: run_local_camInteractive.py:543
 msgid "Escape: Lesemodus beenden"
 msgstr ""
 
-#: ../run_local_camInteractive.py:592
+#: run_local_camInteractive.py:596
 msgid "Programm startet ..."
 msgstr ""
 
-#: ../run_local_camInteractive.py:608
+#: run_local_camInteractive.py:612
 msgid "Verarbeite Dateien aus Verzeichnis "
 msgstr ""
 
-#: ../run_local_camInteractive.py:610 ../run_local_camInteractive.py:694
+#: run_local_camInteractive.py:614 run_local_camInteractive.py:698
 msgid "Verarbeitung abgeschlossen"
 msgstr ""
 
-#: ../run_local_camInteractive.py:613
+#: run_local_camInteractive.py:617
 msgid "Bereit. Taste h für Hilfe drücken."
 msgstr ""
 
-#: ../run_local_camInteractive.py:626
+#: run_local_camInteractive.py:630
 msgid "Kamera konnte Seite {} nicht aufnehmen."
 msgstr ""
 
-#: ../run_local_camInteractive.py:633
+#: run_local_camInteractive.py:637
 msgid "Datei für Seite {} nicht vorhanden"
 msgstr ""
 
-#: ../run_local_camInteractive.py:642
+#: run_local_camInteractive.py:646
 msgid "Programm wird beendet."
 msgstr ""
 
-#: ../run_local_camInteractive.py:652
+#: run_local_camInteractive.py:656
 msgid "Kamera eingeschaltet - verwende Kamerabild"
 msgstr ""
 
-#: ../run_local_camInteractive.py:654
+#: run_local_camInteractive.py:658
 msgid "Kamera ausgeschaltet - verwende bestehende Ergebnisdateien"
 msgstr ""
 
-#: ../run_local_camInteractive.py:662 ../run_local_camInteractive.py:666
+#: run_local_camInteractive.py:666 run_local_camInteractive.py:670
 msgid "Sprechgeschwindigkeit {} Prozent"
 msgstr ""
 
-#: ../run_local_camInteractive.py:672 ../run_local_camInteractive.py:679
+#: run_local_camInteractive.py:676 run_local_camInteractive.py:683
 msgid "Seite {}"
 msgstr ""
 
-#: ../run_local_camInteractive.py:674
+#: run_local_camInteractive.py:678
 msgid "Bereits auf Seite eins"
 msgstr ""
 
-#: ../run_local_camInteractive.py:682
+#: run_local_camInteractive.py:686
 msgid "Zum Wechseln in den Lesemodus Entertaste drücken"
 msgstr ""
 
-#: ../run_local_camInteractive.py:690
+#: run_local_camInteractive.py:694
 msgid "verarbeite Seite {} von Kamera"
 msgstr ""
 
-#: ../run_local_camInteractive.py:692
+#: run_local_camInteractive.py:696
 msgid "verarbeite Seite {} aus bestehender Datei"
 msgstr ""
 
-#: ../run_local_camInteractive.py:699
+#: run_local_camInteractive.py:703
 msgid "Tastencode {} nicht verwendet"
 msgstr ""
 
