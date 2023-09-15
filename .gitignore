@@ -4,3 +4,11 @@
 web_app/static/data/
 venv/
 Logs/
+results
+Liblouis/louis
+Liblouis/tables
+pytorch_retinanet
+temp0.wav
+temp1.wav
+weights/model.t7
+
