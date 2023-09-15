@@ -77,8 +77,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 pip uninstall opencv-python-headless
 pip install opencv-python
-wget -O weights/model.t7 http://ovdv.ru/files/retina_chars_eced60.clr.008
-python run_local_camInteractive.py
 ```
 Windows: pip directory (i.e. `<python>\Scripts`) should be added to Path .   
 Be sure  `python` and `pip` start Python3 if both Python 3 and Python 2.7 are installed.   
@@ -147,6 +145,7 @@ If directory name or zip file is supplied, all image and pdf files in it will be
 Languages:
 `RU` - Russian
 `EN` - English (grade 1)
+`EN2` - English (grade 2)
 `DE` - German
 `GR` - Greek
 `LV` - Latvian
@@ -166,7 +165,7 @@ These instructions are relevant for the python script `run_local_camInteractive.
 Parameters:   
 `input` - image file (jpg, png, pdf, zip file with images or directory name) or 'camera' if webcam shall be used.   
 `-o` - switch off automatic orientation search. Sometimes auto orientation can work incorrectly (for non-typical texts or if there are many recognition errors). In such cases adjust image orientation manually and use `-o` option.   
-`-l <language>` - input document language (default is DE). Use `-l EN` for English texts (see suported languages list above.) 
+`-l <language>` - input document language (default is DE). Use `-l EN` for English texts (see list of supported languages above.) 
 `-u <language>` - user interface language (default is DE, currently DE and EN are supported). See `data_i18n/ReadMe_i18n.txt` for instructions how to translate the user interface.  
 `-s` - silent mode (switch off speech output).   
 `-h` - print help.   
