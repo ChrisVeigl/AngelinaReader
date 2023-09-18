@@ -499,9 +499,16 @@ def openCamera():
     i = 0
     while i < 10:
         print("checking Camera {}".format(i))
-        cam = cv2.VideoCapture(i)
-        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 800)
-        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+        if (onWindows==True):
+            cam = cv2.VideoCapture(i,cv2.CAP_DSHOW)
+        else:
+            cam = cv2.VideoCapture(i)
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1024)
+        cam.set(cv2.CAP_PROP_EXPOSURE, -8.0)
+        cam.set(cv2.CAP_PROP_BRIGHTNESS, 125)
+        cam.set(cv2.CAP_PROP_CONTRAST, 135)
+        
         ret, frame = cam.read()
         if ret:        
         # if cam.read()[0]:
@@ -515,6 +522,8 @@ def openCamera():
             else:
                 announce (_("nein"))
                 cam.release()
+                cam=None
+                fromCam=False
         i+=1       
 
 def printHelp():
@@ -526,6 +535,7 @@ def printHelp():
     announce(_("Entertaste: zum Lesemodus wechseln"))
     announce(_("Plustaste: schneller sprechen"))
     announce(_("Minustaste: langsamer sprechen"))
+    announce(_("Taste e: Kamera Einstellungen anzeigen"))
     announce(_("Taste l: löschen aller bestehenden Bild- und Ergebnisdateien"))
     announce(_("Escape: Programm beenden und Textdatei speichern"))
 
@@ -625,11 +635,13 @@ while True:
         if (fromCam==True):
             if cam==None:
                 openCamera()
-            ret, frame = cam.read()
-            if not ret:
-                announce(_("Kamera konnte Seite {} nicht aufnehmen.").format(img_counter))
-                # fromCam=False
-                updateImage=False
+            else:
+                ret, frame = cam.read()
+                if not ret:
+                    announce(_("Kamera konnte Seite {} nicht aufnehmen.").format(img_counter))
+                    fromCam=False
+                    cam=None
+                    updateImage=False
         elif (os.path.exists(actfile)==True):
             frame = cv2.imread(actfile)
             updateImage=False
@@ -653,14 +665,19 @@ while True:
     elif k%256 == ord('k'):    # k pressed
         fromCam = not fromCam
         if fromCam==True:
-            announce(_("Kamera eingeschaltet - verwende Kamerabild"))
+            announce(_("Öffne Kamera"))
         else:
             announce(_("Kamera ausgeschaltet - verwende bestehende Ergebnisdateien"))
         updateImage=True
 
     elif k%256 == ord('h'):    # h pressed
         printHelp()
-        
+
+    elif k%256 == ord('e'):    # e pressed
+        if (cam!=None):
+            announce(_("Kamera Einstellungen geöffnet"))
+            cam.set(cv2.CAP_PROP_SETTINGS, 1);
+
     elif k%256 == ord('-'):    # - pressed
         voiceSpeed -= 10
         announce(_("Sprechgeschwindigkeit {} Prozent").format(voiceSpeed))
