@@ -15,3 +15,4 @@ albumentations==0.4.5
 pygame
 PyMuPDF>=1.17.5
 -e git+https://github.com/IlyaOvodov/OvoTools.git@asi#egg=OvoTools
+pyttsx3
